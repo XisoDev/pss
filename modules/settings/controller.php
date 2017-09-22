@@ -233,11 +233,11 @@ class settingsController{
                 $tmpName = $_FILES['csv_file']['tmp_name'];
                 $csvString = file($tmpName);
 
-                $data = str_getcsv($csvString[0], "\r"); //parse the rows
+//                $data = str_getcsv($csvString[0], "\r"); //parse the rows
 
                 $csvArray = array();
-                foreach($data as $row) $csvArray[] = str_getcsv($row, ","); //parse the items in rows
-                unset($data, $row);
+                foreach($csvString as $row) $csvArray[] = str_getcsv($row, ","); //parse the items in rows
+//                unset($data, $row);
 
                 //Array to Data
                 $fields = array();
@@ -251,6 +251,8 @@ class settingsController{
                         foreach($val as $k => $field){
 
                             $pure_field = strtolower(preg_replace("/\s+/", "", $field));
+                            $pure_field = preg_replace("/[^a-zA-Z/s", "", $pure_field);
+
                             if(strpos($csvArray[0][$k],"common") !== false){
                                 $check_common_fields[] = $pure_field;
                             }
@@ -269,7 +271,9 @@ class settingsController{
                     }else{
                         $data = array();
                         foreach($val as $k => $v){
-                            $data[strtolower(preg_replace("/\s+/", "", $csvArray[1][$k]))] = $v;
+                            $pure_field = strtolower(preg_replace("/\s+/", "", $csvArray[1][$k]));
+                            $pure_field = preg_replace("/[^a-zA-Z/s", "", $pure_field);
+                            $data[$pure_field] = $v;
                         }
                         $matrix[] = $data;
                     }
@@ -278,7 +282,7 @@ class settingsController{
                 $common_fields = array("model","mat_cost","st","sutuff_qty","prod_subs","design_group","design_ex_img","design_in_img","use_prm");
                 foreach($common_fields as $field){
                     if(!in_array($field,$check_common_fields)){
-                        return setReturn(-1,sprintf("필수 필드인 [%s]필드가 누락되었습니다." . var_dump($check_common_fields),$field));
+                        return setReturn(-1,sprintf("필수 필드인 [%s]필드가 누락되었습니다.",$field));
                     }
                 }
 
@@ -325,7 +329,7 @@ class settingsController{
                 $insert_result = insertQuery("product",$obj);
                 if(!$insert_result->result){
                     sql_rollback();
-                    return setReturn(-1,"필드리스트 생성에 실패했습니다.");
+                    return setReturn(-1,"필드리스트 생성에 실패했습니다.<br />" . $insert_result->message);
                 }
 
 
@@ -356,7 +360,11 @@ class settingsController{
                 $output = sql_query($table_sql);
                 if(!$output){
                     sql_rollback();
-                    return setReturn(-1,"매트릭스 생성에 실패했습니다.<br />");
+
+                    global $g5;
+                    $link = $g5['connect_db'];
+
+                    return setReturn(-1,"매트릭스 생성에 실패했습니다.<br />" . mysqli_errno($link) . " : " .  mysqli_error($link));
                 }
 
 

@@ -47,6 +47,13 @@ function insertQuery($table_name, $args){
     if(!$output->toBool()) return $output;
 
     $output->result = sql_query($output->sql);
+    if(!$output->result){
+        global $g5;
+        $link = $g5['connect_db'];
+
+        $output->error = -1;
+        $output->message = mysqli_errno($link) . " : " .  mysqli_error($link);
+    }
 	return $output;
 }
 
