@@ -138,6 +138,8 @@ class settingsController{
 // 생산비관리
     function procProductUpdateProcFees($args){
         global $module_info;
+        global $g5;
+        $link = $g5['connect_db'];
         if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
 
         if(!isset($args->categories)) return setReturn(-1,"매트릭스 레코드의 Prod_subs 필드를 통해 법인목록을 구성하십시오.");
@@ -148,7 +150,7 @@ class settingsController{
         $settingsModel = &getModel('settings');
         $sales_fields = $settingsModel->getProcfeesField();
 
-        sql_begin();
+        sql_begin($link);
 
         sql_query(sprintf("DELETE FROM `proc_fees` where `product_srl` = %d and `prod_subs` = '%s'",$module_info->seq,$args->prod_subs));
 
@@ -169,7 +171,7 @@ class settingsController{
                 return setReturn(-1,"생산법인 데이터 변경에 실패했습니다.<br />값이 올바른지 확인하십시오.");
             }
         }
-        sql_commit();
+        sql_commit($link);
 
         return setReturn(0,"성공적으로 반영되었습니다.");
     }
@@ -222,6 +224,8 @@ class settingsController{
     function procProductTypeInsert($args){
         global $module_info;
         global $domain;
+        global $g5;
+        $link = $g5['connect_db'];
 
         if ( isset($_FILES["csv_file"])) {
 
@@ -298,7 +302,7 @@ class settingsController{
 
                 //트랜잭션 시작.
                 $obj = new stdClass();
-                sql_begin();
+                sql_begin($link);
 
                 //input product record.
                 $obj->product_srl = getNextSequence();
@@ -329,7 +333,7 @@ class settingsController{
                 $obj->list_order = $obj->product_srl * -1;
                 $insert_result = insertQuery("product",$obj);
                 if(!$insert_result->result){
-                    sql_rollback();
+                    sql_rollback($link);
                     return setReturn(-1,"필드리스트 생성에 실패했습니다.<br />" . $insert_result->message);
                 }
 
@@ -360,11 +364,7 @@ class settingsController{
 
                 $output = sql_query($table_sql);
                 if(!$output){
-                    sql_rollback();
-
-                    global $g5;
-                    $link = $g5['connect_db'];
-
+                    sql_rollback($link);
                     return setReturn(-1,"매트릭스 생성에 실패했습니다.<br />" . mysqli_errno($link) . " : " .  mysqli_error($link));
                 }
 
@@ -372,13 +372,13 @@ class settingsController{
                 //생성된 테이블에 값 집어넣기.
                 foreach($matrix as $data){
                     $result = insertQuery("product_".$args->table_id , $data);
-                    sql_rollback();
+                    sql_rollback($link);
                     if(!$result->result)
                         return setReturn(-1, "매트릭스 데이터가 잘못되었습니다. [no : " . $data['no'] . "]");
                 }
 
                 //종료.
-                sql_commit();
+                sql_commit($link);
 
                 return setReturn(0, "Product Type 생성 완료.", sprintf("%ssettings/dispProductTypeList/%d?dept_srl=%d&tab=settingfield" ,$domain ,$obj->product_srl,$obj->dept_srl));
             }

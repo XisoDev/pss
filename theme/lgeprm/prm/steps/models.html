@@ -138,7 +138,7 @@ sort($model_fields);
     foreach($model_fields as $field) {
         echo "enable_fields.{$field['field']} = new Array();";
         foreach ($field['list'] as $val) {
-            echo "enable_fields.{$field['field']}.push('{$val}');";
+            echo "enable_fields.{$field['field']}.push('" . addslashes($val) . "');";
         }
         $search_fields[] = $field['field'];
     }
