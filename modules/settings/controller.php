@@ -279,7 +279,7 @@ class settingsController{
                     }
                 }
                 //check fields
-                $common_fields = array("model","mat_cost","st","sutuff_qty","prod_subs","design_group","design_ex_img","design_in_img","use_prm");
+                $common_fields = array("no","model","mat_cost","st","sutuff_qty","prod_subs","design_group","design_ex_img","design_in_img","use_prm");
                 foreach($common_fields as $field){
                     if(!in_array($field,$check_common_fields)){
                         return setReturn(-1,sprintf("필수 필드인 [%s]필드가 누락되었습니다.",$field));
