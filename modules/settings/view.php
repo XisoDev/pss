@@ -162,7 +162,7 @@ class settingsView {
             $output->oProduct->circu_list = sql_query_array($query)->data;
         }else if($_GET['tab'] == "salefees"){
             //get subslist
-            $query = "SELECT * FROM `circu_product` left join `subs` on `circu_product`.`subs_srl` = `subs`.`subs_srl` group by `circu_product`.`subs_srl` ";
+            $query = "SELECT * FROM `circu_product` left join `subs` on `circu_product`.`subs_srl` = `subs`.`subs_srl` where `product_srl` = {$oProduct->product_srl} group by `circu_product`.`subs_srl` ";
             $output->subs_list = sql_query_array($query)->data;
 
             $settingsModel = &getModel('settings');
