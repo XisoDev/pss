@@ -1,0 +1,393 @@
+<?php
+    $profit_model = array();
+    foreach($output->data->models as $model){
+        $profit_model[$model->category][] = $model;
+    }
+    $profit = $output->data->profit;
+    $tabindex = 1;
+?>
+
+<div style="padding-bottom: 200px;">
+    Currency : <?=$output->data->currency_char?> <?=$output->data->currency?> (<?=$output->data->currency_name?>) <br />
+    F/X Rate : <?=$output->data->to_usd?>
+    <div class="box box-success">
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-2">
+                    <div class="input-group">
+                        <span class="input-group-addon">QTY</span>
+                        <input tabindex="<?=$tabindex++?>" type="text" class="form-control" id="all_qty" name="qty" value="<?=$profit->all->qty?>">
+                        <span class="input-group-addon">EA</span>
+                    </div>
+                </div>
+                <div class="col-xs-2">
+                    <div class="input-group">
+                        <span class="input-group-addon">VAT</span>
+                        <input tabindex="<?=$tabindex++?>" type="text" class="form-control" id="all_vat" name="vat" value="<?=$profit->all->vat?>">
+                        <span class="input-group-addon">%</span>
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                    <div class="input-group">
+                        <span class="input-group-addon">Dealer Margin</span>
+                        <input tabindex="<?=$tabindex++?>" type="text" class="form-control" id="all_dealer_margin" name="dealer_margin" value="<?=$profit->all->dealer_margin?>">
+                        <span class="input-group-addon">%</span>
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                    <div class="input-group">
+                        <span class="input-group-addon">Sales Deduction</span>
+                        <input tabindex="<?=$tabindex++?>" type="text" class="form-control" id="all_sales_deduction" name="sales_deduction" value="<?=$profit->all->sales_deduction?>">
+                        <span class="input-group-addon">%</span>
+                    </div>
+                </div>
+                <div class="col-xs-2">
+                    <button class="btn btn-default btn-block" onclick="applyVal()">Apply ALL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive" style="overflow-x:hidden;">
+        <table class="table no-margin modelTable">
+            <thead>
+            <tr>
+                <th>Category</th>
+                <th>Models</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach($profit_model as $category => $model_list) { ?>
+                <tr>
+                <td class="title">
+                        <?=$category?>
+                </td>
+                    <td>
+                    <div class="row">
+                    <?php foreach($model_list as $model){ ?>
+                        <div class="model_item col-lg-4 col-md-6 col-xs-12"
+                             data-model-category="<?=$model->category?>"
+                             data-model-no="<?=$model->no?>"
+                             data-model-prod_subs="<?=$model->prod_subs?>"
+                             data-model-st="<?=$model->st?>"
+                             data-model-sutuff_qty="<?=$model->sutuff_qty?>"
+                             data-model-mat_cost="<?=$model->mat_cost?>"
+                        >
+                            <div class="thumbnail"></div>
+                            <div class="info">
+                                <h4><?=$model->model?>(<?=$model->prod_subs?>)</h4>
+                                <p><?=$model->display?> / <?=$model->cmf?></p>
+                                <p><?=$model->controller?></p>
+                                <p><?=$model->exterior?></p>
+                            </div>
+                            <div class="profit row underline_form small">
+                                <div class="col-xs-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><?=$output->data->currency?></span>
+                                        <input tabindex="<?=$tabindex++?>" type="text" id="rrp_<?=$model->no?>" name="rrp_<?=$model->no?>" value="<?=$profit->models[$model->no]->rrp?>" class="form-control" data-toggle="tooltip" placeholder="RRP" title="RRP"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-3">
+                                <input type="text" id="qty_<?=$model->no?>" name="qty_<?=$model->no?>" value="<?=$profit->models[$model->no]->qty?>" class="form-control qty" data-toggle="tooltip" placeholder="Q'ty" title="Q'ty (EA)" />
+                                </div>
+                                <div class="col-xs-3">
+                                <input type="text" id="vat_<?=$model->no?>" name="vat_<?=$model->no?>" value="<?=$profit->models[$model->no]->vat?>" class="form-control vat" data-toggle="tooltip" placeholder="VAT" title="VAT (%)" />
+                                </div>
+                                <div class="col-xs-3">
+                                <input type="text" id="dealer_margin_<?=$model->no?>" name="dealer_margin_<?=$model->no?>" value="<?=$profit->models[$model->no]->dealer_margin?>" class="form-control dealer_margin" data-toggle="tooltip" placeholder="Dealer Margin" title="Dealer Margin (%)" />
+                                </div>
+                                <div class="col-xs-3">
+                                <input type="text" id="sales_deduction_<?=$model->no?>" name="sales_deduction_<?=$model->no?>" value="<?=$profit->models[$model->no]->sales_deduction?>" class="form-control sales_deduction" data-toggle="tooltip" placeholder="Sales Deduction" title="Sales Deduction (%)" />
+                                </div>
+                            </div>
+
+                            <div class="row profit_result underline_form small">
+                                <div class="col-xs-6">
+                                    <div class="input-group">
+                                        <input type="text" id="sales_amount_<?=$model->no?>" name="sales_amount_<?=$model->no?>" value="<?=$profit->models[$model->no]->smt?>" class="form-control" data-toggle="tooltip" title="Sales Amount" readonly="readonly" value="" />
+                                        <span class="input-group-addon"><?=$output->data->currency?></span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="input-group">
+                                        <input type="text" id="coi_<?=$model->no?>" name="coi_<?=$model->no?>" value="<?=$profit->models[$model->no]->coi?>" class="form-control" data-toggle="tooltip" title="COI" readonly="readonly" value="" />
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="input-group">
+                                        <input type="text" id="mp_<?=$model->no?>" name="mp_<?=$model->no?>" value="<?=$profit->models[$model->no]->mp?>" class="form-control" data-toggle="tooltip" title="MP" readonly="readonly" value="" />
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    <?php } ?>
+                    </div>
+                    </td>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<article id="fixedWidget">
+    <div class="whiteBG">
+        <form method="post" action="<?=$domain?>prm/procUpdateProfit/<?=$module_info->seq?>">
+            <input type="hidden" name="success_return_url" value="<?=$current_url_clear?>?step=<?=$step+1?>" />
+            <input type="hidden" name="error_return_url" value="<?=$current_url_clear?>?step=<?=$step?>" />
+            <input type="hidden" name="profit" id="profit_obj" value="" />
+            <button type="submit" id="is_save" href="#" class="btn bg-maroon btn-flat"><i class="fa fa-save"></i> SAVE & Next Step </button>
+            <h4>TOTAL Profitability</h4>
+
+
+            <div class="row underline_form">
+                <div class="col-sm-3">
+                <small>Target : <?=$output->data->subs_title?></small><br />
+                    <small>Customer NAME</small><br />
+                    <?=$output->data->circu_title?>
+                </div>
+
+                <div class="col-sm-3">
+                <label for="sales_amount">Sales Amount</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><?=$output->data->currency?></span>
+                    <input value="<?=$profit->total->smt?>" type="text" class="form-control" id="total_sales_amount" readonly="readonly" />
+                </div>
+                </div>
+
+                <div class="col-sm-2">
+                <label for="qty">Q'ty</label>
+                <div class="input-group">
+                    <input value="<?=$profit->total->qty?>" type="text" class="form-control" id="total_qty" readonly="readonly" />
+                    <span class="input-group-addon">EA</span>
+                </div>
+                </div>
+
+                <div class="col-sm-2">
+                <label for="coi">COI</label>
+                <div class="input-group">
+                    <input value="<?=$profit->total->coi?>" type="text" class="form-control" id="total_coi" readonly="readonly" />
+                    <span class="input-group-addon">%</span>
+                </div>
+                </div>
+
+                <div class="col-sm-2"><label for="mp">MP</label>
+                <div class="input-group">
+                    <input value="<?=$profit->total->mp?>" type="text" class="form-control" id="total_mp" readonly="readonly" />
+                    <span class="input-group-addon">$</span>
+                </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</article>
+
+<script type="text/javascript">
+
+    //전역
+    var fxrate = <?=$output->data->to_usd?>;
+    var profit = {};
+    profit.models = [];
+    profit.total = {};
+    profit.all = {};
+
+//    판매/생산관리비
+    var proc_fees = jQuery.parseJSON('<?=json_encode($output->data->proc_fees)?>');
+    var sale_fees = jQuery.parseJSON('<?=json_encode($output->data->sale_fees)?>');
+
+    jQuery(document).ready(function($){
+        $(".profit").find('.form-control').change(function(){
+            doCalculate();
+        });
+
+        //로드된 직후 계산을 다시한번 하게함.
+        //모델의 장입수량이나 재료비가 변경되었을 가능성이 있음.
+        //2017.02.19 by xiso
+//        doCalculate();
+    });
+
+    function applyVal(){
+        $(".qty").val($('#all_qty').val());
+        $(".vat").val($('#all_vat').val());
+        $(".dealer_margin").val($('#all_dealer_margin').val());
+        $(".sales_deduction").val($('#all_sales_deduction').val());
+
+        profit.all.qty = $('#all_qty').val();
+        profit.all.vat = $('#all_vat').val();
+        profit.all.dealer_margin = $('#all_dealer_margin').val();
+        profit.all.sales_deduction = $('#all_sales_deduction').val();
+        doCalculate();
+    }
+    function doCalculate() {
+        profit.total.netsales = 0;
+        profit.total.mp_amt = 0;
+        profit.total.coi_amt = 0;
+        profit.total.mp = 0;
+        profit.total.coi = 0;
+        profit.total.qty = 0;
+        profit.total.smt = 0;
+
+
+        $(".model_item").each(function () {
+            var no = $(this).attr('data-model-no');
+            var rrp = $("#rrp_" + no).val();
+            if (rrp < 1) {
+                $("#rrp_" + no).css('border', '1px solid #ad1947');
+                return true;
+            } else {
+                $("#rrp_" + no).removeAttr('style');
+            }
+
+            var qty = $("#qty_" + no).val();
+            if (qty < 1) {
+                $("#qty_" + no).css('border', '1px solid #ad1947');
+                return true;
+            } else {
+                $("#qty_" + no).removeAttr('style');
+            }
+
+            var vat = $("#vat_" + no).val();
+            if (vat < 1) {
+                $("#vat_" + no).css('border', '1px solid #ad1947');
+                return true;
+            } else {
+                $("#vat_" + no).removeAttr('style');
+            }
+
+            var dealer_margin = $("#dealer_margin_" + no).val();
+            if (dealer_margin < 1) {
+                $("#dealer_margin_" + no).css('border', '1px solid #ad1947');
+                return true;
+            } else {
+                $("#dealer_margin_" + no).removeAttr('style');
+            }
+
+            var sales_deduction = $("#sales_deduction_" + no).val();
+            if (sales_deduction < 1) {
+                $("#sales_deduction_" + no).css('border', '1px solid #ad1947');
+                return true;
+            } else {
+                $("#sales_deduction_" + no).removeAttr('style');
+            }
+
+
+            //set Default Variable
+            var retail = rrp / fxrate;
+            var exc_vat = retail / ((vat / 100) + 1);
+            var gross = exc_vat * (1 - (dealer_margin / 100)) * qty;
+            var netsales = gross * (1 - (sales_deduction / 100));
+
+            //netSales to local currency
+            profit.models[no] = {};
+            profit.models[no].no = no;
+            profit.models[no].qty = qty;
+            profit.models[no].rrp = rrp;
+            profit.models[no].vat = vat;
+            profit.models[no].dealer_margin = dealer_margin;
+            profit.models[no].sales_deduction = sales_deduction;
+
+            profit.models[no].gross = gross;
+            profit.models[no].netsales = netsales;
+            profit.models[no].smt = Math.round(netsales * fxrate);
+
+            //set Model Datas
+            var dep_cost = 0.66398599070929;
+            var type = $(this).attr('data-model-category');
+            var st = $(this).attr('data-model-st');
+            var sutuff_qty = $(this).attr('data-model-sutuff_qty');
+            var prod_subs = $(this).attr('data-model-prod_subs');
+            var mat_cost = $(this).attr('data-model-mat_cost') / parseFloat(proc_fees[prod_subs][type].to_usd);
+            console.log(proc_fees);
+            console.log(mat_cost);
+
+            //수량에따른 총 재료비 계산
+            profit.models[no].mat_cost_acc = parseFloat(mat_cost * qty);
+//          변동성 COGS 계산
+            //생산비 값을 QTY 적용해서 모델에다가 계산해넣음.
+            profit.models[no].labor_var = parseFloat(proc_fees[prod_subs][type].labor_var * st * qty);
+            profit.models[no].mfg_var = parseFloat(proc_fees[prod_subs][type].mfg_var * st * qty);
+            //inlandcost 는 판관비쪽 데이터
+            profit.models[no].inland_cost = parseFloat(sale_fees[type].inland_cost * gross);
+            var cogs_var = profit.models[no].mat_cost_acc
+                + profit.models[no].labor_var
+                + profit.models[no].mfg_var
+                + profit.models[no].inland_cost;
+            profit.models[no].cogs_var = cogs_var;
+
+//          고정성 COGS 계산
+            profit.models[no].labor_fix = parseFloat(proc_fees[prod_subs][type].labor_fix * st * qty);
+            profit.models[no].mfg_fix = parseFloat(proc_fees[prod_subs][type].mfg_fix * st * qty);
+            profit.models[no].dep_cost = parseFloat(dep_cost * qty);
+
+            var cogs_fix = profit.models[no].labor_fix
+                + profit.models[no].mfg_fix
+                + profit.models[no].dep_cost;
+            profit.models[no].cogs_fix = cogs_fix;
+
+//          변동성 SGNA 계산
+            profit.models[no].amount_var = parseFloat(sale_fees[type].amount_var * gross);
+            profit.models[no].service_var = parseFloat(sale_fees[type].service_var * gross);
+            profit.models[no].transportation = (parseFloat(sale_fees[type].transportation * qty) / sutuff_qty);
+
+            var sgna_var = profit.models[no].amount_var
+                + profit.models[no].service_var
+                + profit.models[no].transportation;
+            profit.models[no].sgna_var = sgna_var;
+
+//          고정성 SGNA 계산
+            profit.models[no].sale_fees = parseFloat(sale_fees[type].amount_fix * gross);
+            profit.models[no].admin_expenses = parseFloat(sale_fees[type].admin_expenses * gross);
+            profit.models[no].rnd = parseFloat(sale_fees[type].rnd * gross);
+            profit.models[no].service_fix = parseFloat(sale_fees[type].service_fix * gross);
+
+            var sgna_fix = profit.models[no].sale_fees
+                + profit.models[no].admin_expenses
+                + profit.models[no].rnd
+                + profit.models[no].service_fix;
+            profit.models[no].sgna_fix = sgna_fix;
+
+//          MP, COI 산출
+            var mp = netsales - (parseFloat(sgna_var) + parseFloat(cogs_var));
+            profit.models[no].mp_amt = mp;
+            profit.models[no].mp = Math.round((mp / netsales) * 1000)/10;
+            profit.models[no].mp = profit.models[no].mp.toFixed(1);
+
+            var coi = netsales - (parseFloat(sgna_var) + parseFloat(cogs_var) + parseFloat(sgna_fix) + parseFloat(cogs_fix));
+            profit.models[no].coi_amt = coi;
+            profit.models[no].coi = Math.round((coi / netsales) * 1000)/10;
+            profit.models[no].coi = profit.models[no].coi.toFixed(1);
+
+//          Data binding
+            $("#sales_amount_" + no).val(profit.models[no].smt);
+            $("#coi_" + no).val(profit.models[no].coi);
+            $("#mp_" + no).val(profit.models[no].mp);
+
+            console.log(profit.models[no]);
+
+            //total
+            profit.total.qty = profit.total.qty + parseInt(profit.models[no].qty);
+            profit.total.smt = profit.total.smt + parseFloat(profit.models[no].smt);
+
+            profit.total.netsales = profit.total.netsales + parseFloat(profit.models[no].netsales);
+            profit.total.mp_amt = profit.total.mp_amt + parseFloat(profit.models[no].mp_amt);
+            profit.total.coi_amt = profit.total.coi_amt + parseFloat(profit.models[no].coi_amt);
+
+            profit.total.coi = Math.round((profit.total.coi_amt / profit.total.netsales) * 1000)/10;
+            profit.total.mp = Math.round((profit.total.mp_amt / profit.total.netsales) * 1000)/10;
+
+            profit.total.coi = profit.total.coi.toFixed(1);
+            profit.total.mp = profit.total.mp.toFixed(1);
+
+            $("#profit_obj").val(JSON.stringify(profit));
+        }).promise().done(function(){
+            $("#total_sales_amount").val(profit.total.smt);
+            $("#total_qty").val(profit.total.qty);
+            $("#total_coi").val(profit.total.coi);
+            $("#total_mp").val(profit.total.mp);
+        });
+    }
+</script>

@@ -1,0 +1,119 @@
+<?php
+include $module_info->theme_path . "_head.php";
+?>
+<?=loadHeader("PRM","Create Product Road Map")?>
+    <!-- Main content -->
+    <section class="content">
+        <form action="<?=$domain?>prm/procCreatePRM" method="post" enctype="multipart/form-data">
+        <div class="box box-default">
+            <div class="box-header">
+                <i class="fa fa-cube"></i>
+
+                <h3 class="box-title">Set Perference</h3>
+                <!-- tools box -->
+                <div class="pull-right box-tools">
+
+                </div>
+                <!-- /. tools -->
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="dept_srl">Select Dept</label>
+                    <select id="dept_srl" class="form-control" name="dept_srl" onchange="getProducts(this.value)">
+                        <option value="">-------- Depts ---------</option>
+                        <?php
+                        foreach($output->dept as $dept){
+                            echo "<option value='{$dept->dept_srl}'>{$dept->dept_title}</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="form-group" id="productGroup">
+                    <label for="product_srl">Select Product Type</label>
+                    <select id="product_srl" class="form-control" name="product_srl" onchange="getCircurator(this.value)">
+                        <option value="">Please Select Dept</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="circuGroup">
+                    <label for="circu_srl">Select Subsidiary & Circurator</label>
+                    <select id="circu_srl" class="form-control" name="circu_srl">
+                        <option value="">Please Select Product Type</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="prm_title">Enter PRM Title</label>
+                    <input type="text" class="form-control" name="prm_title" id="prm_title" placeholder="Enter PRM Title" required="required"/>
+                </div>
+
+            </div>
+            <div class="box-footer clearfix">
+                <button type="submit" class="pull-right btn btn-primary" id="sendEmail">
+                    Do Create PRM &nbsp;
+                    <i class="fa fa-arrow-circle-right"></i></button>
+            </div>
+        </div>
+        </form>
+    </section>
+<script type="text/javascript">
+
+    function resetProduct(){
+        $("#product_srl").html('<option value="">Please Select Dept</option>');
+    }
+    function resetCircurator(){
+        $("#product_srl").html('<option value="">Please Select Product Type</option>');
+    }
+
+    function getProducts(dept_srl){
+        if(dept_srl == ""){
+            return resetProduct();
+        }
+        var url = "prm/getProductListByDept";
+        var data = {
+            dept_srl : dept_srl
+        };
+        var retObj = xisoApi(url,data);
+        if(retObj.error == 0){
+            if(retObj.data.length > 0){
+                var html = "<option value=''>Select Product Type</option>";
+                for(var i in retObj.data){
+                    html += "<option value='" + retObj.data[i].product_srl;
+                    html += "'>" + retObj.data[i].product_title + "</option>";
+                }
+                $("#product_srl").html(html);
+            }else{
+                resetProduct();
+            }
+        }
+    }
+
+    function getCircurator(product_srl){
+        if(product_srl == ""){
+            return resetCircurator();
+        }
+        var url = "prm/getSubsCorpByProduct";
+        var data = {
+            product_srl : product_srl
+        };
+        var retObj = xisoApi(url,data);
+        console.log(retObj);
+        if(retObj.error == 0){
+            if(retObj.data.length > 0){
+                var html = "<option value=''>Select Subsidiary & Circurator Type</option>";
+                for(var i in retObj.data){
+                    html += "<option value='" + retObj.data[i].circu_srl + "@" + retObj.data[i].subs_srl;
+                    html += "'>[" + retObj.data[i].subs_title + "] - ";
+                    html += retObj.data[i].circu_title + "</option>";
+                }
+                $("#circu_srl").html(html);
+            }else{
+                resetCircurator();
+            }
+        }
+    }
+</script>
+<?php
+include $module_info->theme_path . "_tail.php";
+?>

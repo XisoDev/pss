@@ -1,0 +1,70 @@
+<?php
+    $browser_title = "Login";
+
+    $addHtmlHeader[] = "<link rel=\"stylesheet\" href=\"{$domain}{$module_info->template_path}css/login.css\">";
+    $addHtmlHeader[] = "<link rel=\"stylesheet\" href=\"{$domain}{$module_info->theme_path}css/toastem.css\">";
+    $addHtmlHeader[] = '<link rel="stylesheet" href="'.$domain.$module_info->theme_path.'assets/bower_components/font-awesome/css/font-awesome.min.css">';
+
+    $addHtmlFooter[] = '<script src="'.$domain.$module_info->theme_path.'assets/bower_components/jquery/dist/jquery.min.js"></script>';
+    $addHtmlFooter[] = "<script src=\"{$domain}{$module_info->template_path}js/login.js\"></script>";
+    $addHtmlFooter[] = "<script src=\"{$domain}{$module_info->theme_path}js/toastem.js\"></script>";
+    include $module_info->theme_path."_head.sub.php";
+?>
+
+    <div id="toastem"></div>
+
+<!-- Mixins-->
+<!-- Pen Title-->
+<div class="pen-title">
+    <h1>PRM SYSTEM</h1><span>LGE <a href='#'>Product Road Map</a></span>
+</div>
+<div class="container">
+    <div class="card"></div>
+    <div class="card">
+        <h1 class="title">Login</h1>
+        <form action="<?=$domain?>/member/procLogin" method="post">
+            <input type="hidden" name="success_return_url" value="<?=$_GET['success_return_url']?>" />
+            <div class="input-container">
+                <input type="text" name="user_id" id="user_id" required="required"/>
+                <label for="user_id">USER ID</label>
+                <div class="bar"></div>
+            </div>
+            <div class="input-container">
+                <input type="password" name="password" id="password" required="required"/>
+                <label for="password">Password</label>
+                <div class="bar"></div>
+            </div>
+            <div class="button-container">
+                <button><span>Sign In</span></button>
+            </div>
+            <div class="footer">by <a href="#" style="color:#ad1947;">LG Electronics</a></div>
+        </form>
+    </div>
+    <div class="card alt">
+        <div class="toggle"></div>
+        <h1 class="title">QuickMail
+            <div class="close"></div>
+        </h1>
+        <form>
+            <div class="input-container">
+                <input type="email" id="email_address" required="required"/>
+                <label for="#{label}">Sender E-mail Address</label>
+                <div class="bar"></div>
+            </div>
+            <div class="input-container">
+                <input type="text" id="title" required="required"/>
+                <label for="title">Title</label>
+                <div class="bar"></div>
+            </div>
+            <div class="input-container">
+                <textarea name="content" id="content" required="required"></textarea>
+                <label for="content">Messages..</label>
+                <div class="bar" style="bottom:-20px;"></div>
+            </div>
+            <div class="button-container">
+                <button><span>SendMail</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php include $module_info->theme_path."_tail.sub.php";?>

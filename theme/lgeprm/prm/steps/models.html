@@ -1,0 +1,285 @@
+<?php
+    //arrange
+    //set Matrix data
+    $table_id = $output->data->table_id;
+
+    $model_fields = array();
+    foreach($output->data->field_model as $field => $info){
+        if($info['model_use'] != "Y") continue;
+        $model_fields[$info['model_order']] = $info;
+        $model_fields[$info['model_order']]['field'] = $field;
+        $model_fields[$info['model_order']]['th'] = $output->data->field_th[$field];
+
+        $query = sprintf("select %s from product_%s group by %s",$field,$table_id,$field);
+        $list = sql_query_array($query);
+
+        $model_fields[$info['model_order']]['list'] = array();
+        foreach($list->data as $val){
+            $model_fields[$info['model_order']]['list'][] = $val->{$field};
+        }
+    }
+sort($model_fields);
+?>
+
+<div style="padding-bottom: 200px;">
+    <div class="table-responsive" style="overflow-y:hidden;">
+        <table class="table no-margin modelTable">
+
+            <tr>
+                <?php
+                    $ths = array();
+                    $cur_key = 0;
+                    $cur_th = "";
+                    foreach($model_fields as $key => $field) {
+                        if($cur_th != $field['th']){
+                            $cur_key = $key;
+                            $cur_th = $field['th'];
+                            $ths[$key] = array();
+                            $ths[$key]["th"] = $cur_th;
+                            $ths[$key]["cnt"] = 1;
+                        }else{
+                            $ths[$cur_key]["cnt"] = $ths[$cur_key]["cnt"] + 1;
+                        }
+                    }
+
+                    foreach($ths as $th){
+                        echo "<th colspan='{$th['cnt']}'>
+                            {$th['th']}
+                            </th>";
+                    }
+                ?>
+            </tr>
+
+            <tr>
+                <?php foreach($model_fields as $field){ ?>
+                    <th>
+                        <?=$field['model_display']?>
+                    </th>
+                <?php } ?>
+            </tr>
+
+            <tr><?php foreach($model_fields as $field){ ?>
+                    <td>
+                        <ul>
+                            <?php foreach($field['list'] as $val){ ?>
+                            <li class="field_item field_<?=$field['field']?>" data-field="<?=$field['field']?>" data-value="<?=$val?>" onclick="changeField('<?=$field['field']?>',this);">
+                                <?=$val?>
+                            </li>
+                            <?php } ?>
+                        </ul>
+                    </td>
+                <?php } ?></tr>
+        </table>
+    </div>
+</div>
+
+<article id="fixedWidget">
+    <div class="whiteBG">
+        <form method="post" action="<?=$domain?>prm/procUpdateModel/<?=$module_info->seq?>">
+            <input type="hidden" name="success_return_url" value="<?=$current_url_clear?>?step=<?=$step+1?>" />
+            <input type="hidden" name="error_return_url" value="<?=$current_url_clear?>?step=<?=$step?>" />
+            <input type="hidden" name="design_id" value="<?=$output->data->design_id?>" /
+            >
+            <button type="submit" id="is_save" href="#" class="btn bg-maroon btn-flat"><i class="fa fa-save"></i> SAVE & Next Step </button>
+            <h4>Model Cart (<span id="model_cart_cnt">0</span>)</h4>
+            <div class="row" id="model_cart_list">
+                <?php
+                    foreach($output->data->models as $model){
+                         echo "<div class=\"col-sm-4 model_item\">
+                                <input type=\"hidden\" class=\"model_cart\" name=\"model_cart[]\" value=\"{$model->no}\" />
+                                <div class=\"thumbnail\"></div>
+                                <div class=\"info\">
+                                    <h4>{$model->model} ({$model->prod_subs})</h4>
+                                    <p>{$model->category} / {$model->cmf}</p>
+                                    <p>{$model->exterior}</p>
+                                    <p class=\"pull-right\">
+                                        <button onclick=\"removeModel(this)\" class=\"btn btn-xs btn-danger\">
+                                            <i class=\"fa fa-trash\"></i>
+                                        </button>
+                                    </p>
+                                </div>
+                            </div>";
+                    }
+                ?>
+
+            </div>
+        </form>
+    </div>
+</article>
+
+<div class="modal fade" id="selected_models">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Selected Models</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="selected_models_list">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="resetField()">Reset & Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script type="text/javascript">
+    var models = {};
+    var conditions = {};
+    var enable_fields = {};
+    <?php
+        $search_fields = array();
+    foreach($model_fields as $field) {
+        echo "enable_fields.{$field['field']} = new Array();";
+        foreach ($field['list'] as $val) {
+            echo "enable_fields.{$field['field']}.push('{$val}');";
+        }
+        $search_fields[] = $field['field'];
+    }
+    ?>
+
+    //일단 로드될때 가능한 필드들만 호출 (design_id가 있을 수 있음);
+    jQuery(document).ready(function(){
+        updateFields();
+    });
+
+    function removeModel(obj){
+        jQuery(obj).parent().parent().parent().remove();
+        $("#model_cart_cnt").html($("input[class=model_cart]").length);
+    }
+
+    function addCart(model_no){
+        var model = models['no'+model_no];
+        if($("input[class=model_cart][value=" + model.no + "]").length > 0){
+            alert('this model, exists in cart');
+            return false;
+        }
+
+        var html = '<div class="col-sm-4 model_item">' +
+            '<input type="hidden" class="model_cart" name="model_cart[]" value="' + model.no + '" />' +
+            '<div class="thumbnail"></div>' +
+            '<div class="info">' +
+            '<h4>' + model.model + ' (' + model.prod_subs + ')</h4>' +
+            '<p>' + model.category + ' / ' + model.cmf + '</p>' +
+            '<p>' + model.exterior + '</p>' +
+            '<p class="pull-right">' +
+            '<button onclick="removeModel(this)" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>';
+        html += '</p></div></div>';
+        $("#model_cart_list").append(html);
+        $("#model_cart_cnt").html($("input[class=model_cart]").length);
+        return false;
+    }
+
+    function model_message(type){
+        if(type == 'exists'){
+            alert('This model, exists in cart.');
+        }else{
+            alert('This model, Not Operated PRM.');
+        }
+        return false;
+    }
+
+    function changeField(field,obj){
+        if($(obj).hasClass('active')){
+            $(obj).removeClass('active');
+            delete conditions[field];
+        }else if(!$(obj).hasClass('disable')){
+            $(".field_" + field).removeClass('active');
+            $(obj).addClass('active');
+            conditions[field] = $(obj).attr('data-value');
+        }else{
+            return;
+        }
+
+        var cnt = Object.keys(conditions).length;
+        if(cnt >= <?=count($model_fields)?>){
+            doSearch();
+        }else{
+            updateFields();
+        }
+    }
+
+    function resetField(){
+        $(".field_item").removeClass('active');
+        $(".field_item").removeClass('disabled');
+        conditions = {};
+        updateFields();
+        //close Modal
+        $('#selected_models').modal('hide');
+    }
+
+    function doSearch(){
+        var params = {};
+        params["table_id"] = '<?=$table_id?>';
+        params["conditions"] = conditions;
+
+        var retObj = xisoApi('prm/getModels',params);
+        if(retObj.error >= 0){
+            $("#selected_models_list").html("");
+            models = {};
+            for(var i in retObj.model_list){
+                var model = retObj.model_list[i];
+                models['no' + model.no] = model;
+
+                var html = '<div class="col-xs-12 model_item">' +
+                    '<div class="thumbnail"></div>' +
+                    '<div class="info">' +
+                    '<h4>' + model.model + ' (' + model.prod_subs + ')</h4>' +
+                    '<p>' + model.category + ' / ' + model.cmf + '</p>' +
+                    '<p>' + model.exterior + '</p>' +
+                    '<p class="btn_area">';
+
+                if(model.use_prm != "Y"){
+                    html += '<a href="#" class="btn btn-default btn-flat btn-xs" onclick="return model_message(\'disabled\')"><i class="fa fa-info"></i> Disabled</a>';
+                }else if($("input[class=model_cart][value=" + model.no + "]").length > 0){
+                    html += '<a href="#" class="btn btn-warning btn-flat btn-xs" onclick="return model_message(\'exists\')"><i class="fa fa-warning"></i> EXISTS</a>';
+                }else{
+                    html += '<a href="#" class="btn bg-maroon btn-flat btn-xs" onclick="return addCart(' + model.no + ')"><i class="fa fa-cart-plus"></i> ADD CART</a>';
+                }
+
+                html += '</p></div></div>';
+                $("#selected_models_list").append(html);
+            }
+
+            //open Modal
+            $('#selected_models').modal('show');
+        }
+    }
+    function updateFields(){
+        var params = {};
+        params["table_id"] = '<?=$table_id?>';
+        params["conditions"] = conditions;
+        params["search_fields"] = '<?=join(",",$search_fields)?>';
+
+        var retObj = xisoApi('prm/getEnableFields/<?=$module_info->seq?>',params);
+
+        if(retObj.error == 0){
+            enable_fields = retObj.enable_fields;
+            //속도가 너무느려서 반대방식으로 변경
+            //필드루프를 돌면서 enable_fields 에 in_array 되어있지 않으면 disable 포함되어있으면 클래스 무조건 제거 (없어도)
+            $(".field_item").each(function(){
+               var field = $(this).attr('data-field');
+               var data = $(this).attr('data-value');
+               if(enable_fields[field].indexOf(data) == -1){
+                   $(this).addClass('disable');
+               }else{
+                   $(this).removeClass('disable');
+               }
+            });
+//            for(var i in enable_fields){
+//                for(var j in enable_fields[i]){
+//                    $(".field_" + i).each(function(){
+//                       if($(this).attr('data-value') == enable_fields[i][j])
+//                           $(this).removeAttr('disable');
+//                    });
+//                }
+//            }
+        }
+    }
+</script>

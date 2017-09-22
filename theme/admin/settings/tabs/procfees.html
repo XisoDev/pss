@@ -1,0 +1,83 @@
+
+    <!-- /.box-header -->
+    <div class="box-body no-padding">
+        <div class="mailbox-controls">
+            <div class="has-feedback">
+                <label for="currency">관리할 생산법인 선택</label>
+                <select class="form-control" onchange="document.location.href = '<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=procfees&prod_subs=' + this.value">
+                    <option value="">Select Subsdiary</option>
+                    <?php
+                        foreach($output->prod_subs as $prod_subs){
+                            if($_GET['prod_subs'] == $prod_subs) $selected = "selected='selected'";
+                            else $selected = false;
+
+                            echo "<option value=\"{$prod_subs}\" $selected>{$prod_subs}</option>";
+                        }
+                    ?>
+                </select>
+            </div>
+        </div>
+        <div class="table-responsive mailbox-messages">
+            <form id="updateForm" action="<?=$domain?>settings/procProductUpdateProcFees/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="prod_subs" value="<?=$_GET['prod_subs']?>" />
+
+                <?php if($_GET['prod_subs']) { ?>
+                <div class="form-group">
+                    <label for="currency">사용 통화선택</label>
+                    <select name="prod_currency" class="form-control">
+                        <?php
+                            foreach($output->currency_list as $currency){
+                                if($output->prod_currency == $currency->code) $selected = "selected='selected'";
+                                else $selected = "";
+
+                                echo "<option value=\"{$currency->code}\" $selected>{$currency->code} - {$currency->title} ({$currency->char})</option>";
+                            }
+                        ?>
+                    </select>
+                </div>
+                <?php } ?>
+
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>생산비 항목</th>
+                            <?php
+                                foreach($output->category_list as $category){
+                                    echo "<th>";
+                                    echo "<input type='hidden' name='categories[]' value='{$category}' />";
+                                    echo "{$category}";
+                                    echo "</th>";
+                                }
+                            ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                <?php if($_GET['prod_subs']) {
+                    foreach($output->proc_fields as $field){
+                        echo "<tr>";
+                            echo "<td>{$field}</td>";
+                            foreach($output->category_list as $category){
+                                $value = $output->proc_values[$category]->{$field};
+                                echo "<td><input type='text' name='{$category}_{$field}' value='$value' /></td>";
+                            }
+                        echo "</tr>";
+                    }
+                }else{
+                    echo "<td colspan='";
+                    echo count($output->category_list)+1;
+                    echo "' style='text-align:center;'>생산법인 설정을 위해서는 설정할 법인을 선택하시고, 법인이 없다면 매트릭스의 Prod_subs 필드가 누락되었는지 확인하세요.</td>";
+                }
+                ?>
+                    </tbody>
+                </table>
+                <div class="mailbox-controls">
+                    <!-- Check all button -->
+                    <button type="submit" class="btn btn-primary btn-sm checkbox-toggle">
+                        <i class="fa fa-refresh"></i> update Proc Cost
+                    </button>
+                </div>
+            </form>
+            <!-- /.table -->
+        </div>
+        <!-- /.mail-box-messages -->
+    </div>

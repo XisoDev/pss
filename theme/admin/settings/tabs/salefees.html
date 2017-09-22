@@ -1,0 +1,65 @@
+
+    <!-- /.box-header -->
+    <div class="box-body no-padding">
+        <div class="mailbox-controls">
+            <div class="has-feedback">
+                <select class="form-control" onchange="document.location.href = '<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=salefees&subs_srl=' + this.value">
+                    <option value="">Select Subsdiary</option>
+                    <?php
+                        foreach($output->subs_list as $subs){
+                            if($_GET['subs_srl'] == $subs->subs_srl) $selected = "selected='selected'";
+                            else $selected = false;
+
+                            echo "<option value=\"{$subs->subs_srl}\" $selected>{$subs->subs_title}</option>";
+                        }
+                    ?>
+                </select>
+            </div>
+        </div>
+        <div class="table-responsive mailbox-messages">
+            <form id="updateForm" action="<?=$domain?>settings/procProductUpdateSaleFees/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="subs_srl" value="<?=$_GET['subs_srl']?>" />
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <?php
+                                foreach($output->category_list as $category){
+                                    echo "<th>";
+                                    echo "<input type='hidden' name='categories[]' value='{$category}' />";
+                                    echo "{$category}";
+                                    echo "</th>";
+                                }
+                            ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                <?php if($_GET['subs_srl']) {
+                    foreach($output->sales_fields as $field){
+                        echo "<tr>";
+                            echo "<td>{$field}</td>";
+                            foreach($output->category_list as $category){
+                                $value = $output->sale_values[$category]->{$field};
+                                echo "<td><input type='text' name='{$category}_{$field}' value='$value' /></td>";
+                            }
+                        echo "</tr>";
+                    }
+                }else{
+                    echo "<td colspan='";
+                    echo count($output->category_list)+1;
+                    echo "' style='text-align:center;'>판매관리비 설정을 위해서는 설정할 법인을 선택하시고, 법인이 없다면 유통을 추가해주세요.</td>";
+                }
+                ?>
+                    </tbody>
+                </table>
+                <div class="mailbox-controls">
+                    <!-- Check all button -->
+                    <button type="submit" class="btn btn-primary btn-sm checkbox-toggle">
+                        <i class="fa fa-refresh"></i> update Sales Cost
+                    </button>
+                </div>
+            </form>
+            <!-- /.table -->
+        </div>
+        <!-- /.mail-box-messages -->
+    </div>

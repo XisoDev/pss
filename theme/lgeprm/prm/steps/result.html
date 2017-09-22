@@ -1,0 +1,326 @@
+<?php
+    $oPrmModel = getModel('prm');
+    $oResult = $oPrmModel->getResult($output->data);
+?>
+<div class="box" id="resultPage">
+    <div class="pull-right box-tools" style="top:-30px; position:absolute; right:0;">
+
+        <span class="btn btn-success btn-xs">Currency : <?=$output->data->currency_char?> <?=$output->data->currency?> (<?=$output->data->currency_name?>) <br /></span>
+        <span class="btn btn-info btn-xs">F/X Rate : <?=$output->data->to_usd?></span>
+
+        <button class="btn btn-default btn-xs" onclick="doFullSize()"><i class="fa fa-expand"></i></button>
+    </div>
+
+<!--    Layout-->
+    <div class="result_container">
+        <div class="rrpbars">
+        <?php
+        if($output->data->result->rrpbar) {
+            foreach ($output->data->result->rrpbar as $rrpbar) {
+                echo "<div class=\"draggable rrp_bar\" style='top:{$rrpbar->top}px'>
+                <span class=\"rrp\">{$output->data->currency} <b>{$rrpbar->rrp}</b>
+                <a href=\"#\" onclick=\"jQuery(this).parent().parent().remove();\">x</a>
+                </span>
+                </div>";
+            }
+        }
+        ?>
+        </div>
+        <div class="initial">
+            <div class="circu_info">
+                <h4>Market Size</h4>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="demand" placeholder="Demand (%)">
+                    <span class="input-group-addon">%</span>
+                </div>
+                <button class="btn btn-default btn-flat btn-block" onclick="addMarketSize()">Add M/S</button>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="rrp" placeholder="RRP">
+                    <span class="input-group-addon"><?=$output->data->currency?></span>
+                </div>
+                <button class="btn btn-default btn-flat btn-block" onclick="addRrpBar()">Add R/B</button>
+            </div>
+            <div class="item_wrap marketsizes">
+                <?php
+                    if($output->data->result->marketsize){
+                        foreach($output->data->result->marketsize as $marketsize){
+                            echo "<div class=\"market_item draggable resizable\" style='height:{$marketsize->height}px; top:{$marketsize->top}px;'>
+                                    <a href=\"#\" class=\"del\" onclick=\"jQuery(this).parent().remove();\">x</a>
+                                    <span class=\"middle\"><b>{$marketsize->demand}</b>%</span>
+                                </div>";
+                        }
+                    }
+                ?>
+            </div>
+        </div>
+        <div class="initial">
+            <div class="circu_info">
+                <h4>Competitor</h4>
+                <input type="text" class="form-control" id="company" placeholder="Company">
+                <input type="text" class="form-control" id="product" placeholder="Product">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="price" placeholder="Price">
+                    <span class="input-group-addon"><?=$output->data->currency?></span>
+                </div>
+                <button class="btn btn-default btn-flat btn-block" onclick="addCompetitor()">Add C/T</button>
+            </div>
+            <div class="item_wrap competitors">
+                <?php
+                if($output->data->result->competitor){
+                    foreach($output->data->result->competitor as $competitor){
+                        echo "<div class=\"competitor draggable\" style='top:{$competitor->top}px'>
+                                <a href=\"#\" class=\"del\" onclick=\"jQuery(this).parent().remove();\">x</a>
+                                <span><small>{$competitor->company}</small> {$output->data->currency_char} <b>{$competitor->price}</b></span>
+                                <p>{$competitor->product}</p>
+                            </div>";
+                    }
+                }
+                ?>
+            </div>
+        </div>
+        <?php
+        echo "<div class=\"flex2\">";
+            echo "<div class=\"circu_info\">";
+                //            법인루프
+                echo "<h4>{$output->data->subs_title}</h4>";
+                echo "<small>({$output->data->region})</small>";
+                echo "<hr />";
+//NetSales (usd)는 소숫점을 전체저장
+//SMT는 원단위에서 절삭
+                echo "<table>";
+                echo "<tr><th>Q'ty</th><td>{$oResult->result_datas->qty}</td></tr>";
+                echo "<tr><th>Sales Amount</th><td>{$output->data->currency} ". number_format($oResult->result_datas->smt) ."</td></tr>";
+                echo "<tr><th>S/A USD</th><td>$ " . number_format($oResult->result_datas->netsales) ."</td></tr>";
+                echo "<tr><th>COI</th><td>{$oResult->result_datas->coi} %</td></tr>";
+                echo "<tr><th>MP</th><td>{$oResult->result_datas->mp} %</td></tr>";
+                echo "</table>";
+
+            echo "</div><div class='item_wrap'>";
+            $last_top = 0;
+            $cur_top = 0;
+            $item_height = 100;
+            $heights = array();
+            foreach($oResult->result_fields as $rrp => $models){
+                foreach($models as $no => $model){
+                    $model = (object)$model;
+                    //이 모델에 저장된 높이가 있다면,
+                    if($output->data->result->models->{"top_".$model->no}){
+                        $cur_top = $output->data->result->models->{"top_".$model->no};
+                        $last_top = $output->data->result->models->{"top_".$model->no} + $item_height;
+                    }else{
+                    //없다면
+                        $cur_top = $last_top;
+                        $last_top = $cur_top + $item_height;
+                    }
+                    //유통루프때 쓰기위해서 height값을 저장.
+                    $heights[$no] = $cur_top;
+
+                    echo "<div class=\"model_item draggable \" style='top:{$cur_top}px' data-model-no='{$no}'>
+                            <div class=\"thumbnail\"></div>
+                        <div class=\"info\">
+                            <h4>{$model->model} ({$model->prod_subs})</h4>
+                            <p>{$model->category} / {$model->cmf}</p>
+                            <p>{$model->exterior}</p>
+                            <span class='rrp btn btn-xs btn-success'>{$output->data->currency_char} {$rrp}</span>
+                        </div>
+                    </div>";
+                }
+            }
+
+        echo "</div></div>";
+
+//        유통루프
+        foreach($oResult->circu_models as $circu_srl => $rrp_array){
+            echo "<div class=\"flex1\">";
+                echo "<div class=\"circu_info\">";
+                //            법인루프
+                echo "<h4>{$oResult->circus[$circu_srl]->circu_title}</h4>";
+                echo "<small>({$oResult->circus[$circu_srl]->circu_title_abb})</small>";
+                echo "<hr />";
+    //NetSales (usd)는 소숫점을 전체저장
+    //SMT는 원단위에서 절삭
+                echo "<table>";
+                echo "<tr><td>{$oResult->circus[$circu_srl]->total->qty}</td></tr>";
+                echo "<tr><td>{$output->data->currency} ". number_format($oResult->circus[$circu_srl]->total->smt) ."</td></tr>";
+                echo "<tr><td>$ " . number_format($oResult->circus[$circu_srl]->total->netsales) ."</td></tr>";
+                echo "<tr><td>{$oResult->circus[$circu_srl]->total->coi} %</td></tr>";
+                echo "<tr><td>{$oResult->circus[$circu_srl]->total->mp} %</td></tr>";
+                echo "</table>";
+                echo "</div><div class='item_wrap'>";
+                foreach($rrp_array as $rrp => $models){
+                    foreach($models as $no => $model){
+                        $model = (object)$model;
+                        echo "<div class=\"model_item model_{$no}\" style='top:{$heights[$no]}px'>
+                        <div class=\"info\">
+                            <div class=\"thumbnail\"></div>
+                            <h4>{$model->model} ({$model->prod_subs})</h4>
+                            <p>{$model->category} / {$model->cmf}</p>
+                            <p>{$model->exterior}</p>
+                            <span class='rrp btn btn-xs btn-success'>{$output->data->currency_char} {$rrp}</span>
+                        </div>
+                    </div>";
+                    }
+                }
+            echo "</div></div>";
+        }
+        ?>
+    </div>
+</div>
+
+
+
+
+<article id="fixedWidget">
+    <div class="whiteBG" style="padding:0;">
+        <form method="post" id="nextForm" onsubmit="return arrangeObj()" action="<?=$domain?>prm/procUpdateResult/<?=$module_info->seq?>">
+            <input type="hidden" name="success_return_url" value="<?=$current_url_clear?>?step=<?=$step+1?>" />
+            <input type="hidden" name="error_return_url" value="<?=$current_url_clear?>?step=<?=$step?>" />
+            <input type="hidden" name="result" id="result_obj" value="" />
+            <button type="submit" id="is_save" href="#" class="btn bg-maroon btn-flat"><i class="fa fa-save"></i> SAVE & Next Step </button>
+        </form>
+    </div>
+</article>
+
+
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function($){
+        doResize();
+    });
+
+    function doResize(){
+
+        $(".resizable").resizable({
+            handles: "n, s",
+            resize: function (event, ui) {
+                ui.size.width = ui.originalSize.width;
+            }
+        });
+
+        $( ".draggable" ).draggable({
+            axis: "y",
+            drag: function(){
+                if($(this).hasClass('model_item')){
+                    var no = $(this).attr("data-model-no");
+                    $(this).addClass('ztop').removeClass('zbottom');
+                    $(this).siblings().removeClass('ztop').addClass('zbottom');
+                    $(".model_" + no).css('top',$(this).css('top'));
+                    $(".model_" + no).addClass('ztop').removeClass('zbottom');
+                    $(".model_" + no).siblings().removeClass('ztop').addClass('zbottom');
+                }
+            }
+        });
+    }
+
+    function arrangeObj(){
+        var obj = {};
+        obj.rrpbar = new Array();
+        obj.marketsize = new Array();
+        obj.competitor = new Array();
+        obj.models = {};
+        $(".rrp_bar").each(function(){
+            var rrp = {};
+            rrp.top = parseInt($(this).css('top'));
+            rrp.rrp = $(this).find('span.rrp').children('b').html();
+            obj.rrpbar.push(rrp);
+        }).promise().done(function(){
+            $(".market_item").each(function(){
+                var marketsize = {};
+                marketsize.height = parseInt($(this).css('height'));
+                marketsize.top = parseInt($(this).css('top'));
+                marketsize.demand = $(this).find('span.middle').children('b').html();
+                obj.marketsize.push(marketsize);
+            }).promise().done(function(){
+                $(".competitor").each(function(){
+                    var competitor = {};
+                    competitor.top = parseInt($(this).css('top'));
+                    competitor.company = $(this).find('small').html();
+                    competitor.price = $(this).find('b').html();
+                    competitor.product = $(this).find('p').html();
+                    obj.competitor.push(competitor);
+                }).promise().done(function(){
+                    $(".model_item.draggable").each(function(){
+                        obj.models['top_' + $(this).attr('data-model-no')] = parseInt($(this).css('top'));
+                    }).promise().done(function(){
+                        $("#result_obj").val(JSON.stringify(obj));
+//                        console.log(obj);
+                        $("#nextForm").submit();
+                    });
+                });
+            });
+        });
+        return false;
+    }
+
+    function addCompetitor(){
+        var company = $("#company").val();
+        var product = $("#product").val();
+        var price = $("#price").val();
+
+        if(price < 1){
+            toastem.error("경쟁제품 금액을 입력하세요.");
+            $("#price").focus();
+            return false;
+        }
+        if(product == ""){
+            toastem.error("경쟁 제품을 입력하세요.");
+            $("#product").focus();
+            return false;
+        }
+        if(company == ""){
+            toastem.error("경쟁사를 입력하세요.");
+            $("#company").focus();
+            return false;
+        }
+
+        var html = '<div class="competitor draggable">' +
+            '<a href="#" class="del" onclick="jQuery(this).parent().remove();">x</a>' +
+            '<span><small>' + company + '</small> <?=$output->data->currency_char?> <b> ' + price + '</b></span>'  +
+            '<p>' + product + '</p></div>';
+
+        $(".competitors").append(html);
+        doResize();
+    }
+
+    function addMarketSize(){
+        if($("#demand").val() < 1){
+            toastem.error("마켓 점유율 값을 입력하세요.");
+            $("#demand").focus();
+            return false;
+        }
+        var html = '<div class="market_item draggable resizable" style="height:92px;">' +
+            '<a href="#" class="del" onclick="jQuery(this).parent().remove();">x</a>' +
+            '<span class="middle"><b>' + $("#demand").val() +
+            '</b> % </span></div>';
+
+            $(".marketsizes").append(html);
+            doResize();
+    }
+
+    function addRrpBar(){
+        if($("#rrp").val() < 1){
+            toastem.error('RRP Bar를 생성하기 위한 값을 입력하세요.');
+            $("#rrp").focus();
+            return false;
+        }
+        var html = '<div class="draggable rrp_bar" style="top:180px;">' +
+            '<span class="rrp"><?=$output->data->currency?> <b>' + $("#rrp").val()  +
+            '</b><a href="#" onclick="jQuery(this).parent().parent().remove();">x</a>' +
+            '</span></div>';
+
+            $(".rrpbars").append(html);
+            doResize();
+    }
+
+    function doFullSize(){
+        var elem = document.getElementById("resultPage");
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        }
+    }
+</script>

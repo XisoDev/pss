@@ -1,0 +1,60 @@
+<?php
+    $addHtmlHeader[] = "<link rel='stylesheet' type='text/css' href='{$domain}{$module_info->theme_path}/css/prm.css'>";
+    include $module_info->theme_path . "_head.php";
+
+    $step = $_GET['step'] ? $_GET['step'] : 1;
+    $step_list = array(
+        "1" => "Design Identity",
+        "2" => "Select Models",
+        "3" => "Step-Up Logic",
+        "4" => "Profitability",
+        "5" => "PRM Result",
+        "6" => "Macom & Spec"
+    );
+?>
+<?=loadHeader($output->data->title,$output->data->product_title . "/ created : " . zdate($output->data->regdate,"y.m.d H:i"))?>
+
+<ul class="bar_tab">
+    <?php
+        foreach($step_list as $key => $title){
+            if($step == $key) $active = "class='active'";
+            else $active = false;
+
+            echo "<li $active><a href=\"" . $current_url_clear . "?step=" . $key . "\" onclick='return confirmTab()'>".$key.". " . $title . "</a></li>";
+        }
+    ?>
+</ul>
+    <!-- Main content -->
+    <section class="content">
+        <?php
+            switch($step_list[$step]){
+                case "Design Identity" :
+                    include  $module_info->template_path . "steps/design.html";
+                    break;
+                case "Select Models" :
+                    include  $module_info->template_path . "steps/models.html";
+                    break;
+                case "Profitability" :
+                    include  $module_info->template_path . "steps/profit.html";
+                    break;
+                case "PRM Result" :
+                    include  $module_info->template_path . "steps/result.html";
+                    break;
+                case "Macom & Spec" :
+                    include  $module_info->template_path . "steps/macom_spec.html";
+                    break;
+            }
+        ?>
+    </section>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+    function confirmTab(){
+        return confirm('변경사항이 저장되지 않아 변경사항이 유실될 수 있습니다.\n계속할까요?')
+    }
+</script>
+<?php
+include $module_info->theme_path . "_tail.php";
+?>

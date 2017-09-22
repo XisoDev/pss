@@ -1,0 +1,72 @@
+
+    <!-- /.box-header -->
+    <div class="box-body no-padding">
+        <div class="mailbox-controls">
+            <div class="form-group">
+                <label for="design_wrap">Design Group Wrap</label>
+                <input type="text" class="form-control" name="design_wrap" id="design_wrap" />
+            </div>
+            <div class="form-group">
+                <label for="design_group">Design Group</label>
+                <input type="text" class="form-control" name="design_group" id="design_group" />
+            </div>
+
+            <button class="btn btn-primary pull-right" onclick="addDesignGroup()" type="button">ADD DesignGroup</button>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="table-responsive mailbox-messages">
+            <form id="updateForm" action="<?=$domain?>settings/procProductUpdateDesignGroup/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="prod_subs" value="<?=$_GET['prod_subs']?>" />
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Design Wrap</th>
+                            <th>Design Group</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="design_group_table">
+                    <?php
+                        if(count($output->oProduct->design_group)){
+                            foreach($output->oProduct->design_group as $wrap => $groups){
+                                foreach($groups as $group){
+                                    echo "<tr>";
+                                    echo "<td><input type='text' class='form-control' name='wrap[]' value='" . $wrap . "' /></td>";
+                                    echo "<td><input type='text' class='form-control' name='group[]' value='" . $group . "' /></td>";
+                                    echo "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeThis(this)'><i class='fa fa-trash'></i></button></td>";
+                                    echo "</tr>";
+                                }
+                            }
+                        }
+                    ?>
+                    </tbody>
+                </table>
+                <div class="mailbox-controls">
+                    <!-- Check all button -->
+                    <button type="submit" class="btn btn-primary btn-sm checkbox-toggle">
+                        <i class="fa fa-refresh"></i> update Design Group
+                    </button>
+                </div>
+            </form>
+            <!-- /.table -->
+        </div>
+        <!-- /.mail-box-messages -->
+    </div>
+    <script type="text/javascript">
+        function removeThis(obj){
+            $(obj).parent().parent('tr').remove();
+        }
+        function addDesignGroup(){
+            var wrap = $("#design_wrap").val();
+            var group = $("#design_group").val();
+
+            var html = "<tr>" +
+                "<td><input type='text' class='form-control' name='wrap[]' value='" + wrap + "' /></td>" +
+                "<td><input type='text' class='form-control' name='group[]' value='" + group + "' /></td>" +
+                "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeThis(this)'><i class='fa fa-trash'></i></button></td>" +
+                "</tr>";
+
+            $("#design_group_table").append(html);
+        }
+    </script>

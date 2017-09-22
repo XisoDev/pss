@@ -1,0 +1,84 @@
+
+    <!-- /.box-header -->
+    <div class="box-body no-padding">
+        <div class="mailbox-controls">
+            <div class="has-feedback">
+                <select class="form-control" onchange="addCircu(this)">
+                    <option value="">ADD Circurator</option>
+                    <?php
+                        foreach($output->circu_list as $circu){
+                            echo "<option value=\"{$circu->circu_srl}@{$circu->subs_srl}\">({$circu->subs_title}) {$circu->circu_title}</option>";
+                        }
+                    ?>
+                </select>
+                <span class="glyphicon glyphicon-plus form-control-feedback"></span>
+                <form id="insertform" action="<?=$domain?>settings/procProductCircuratorInsert/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+                    <div id="add_circu_list" class="row" style="padding:10px 15px;"></div>
+                    <button type="submit" class="btn btn-block btn-sm btn-success">Add Circurators</button>
+                </form>
+            </div>
+        </div>
+        <div class="table-responsive mailbox-messages">
+            <form id="deleteForm" action="<?=$domain?>settings/procProductCircuratorDelete/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" onclick="toggleCart(this)" />
+                    </th>
+                    <th>법인명</th>
+                    <th>지역</th>
+                    <th>유통명</th>
+                    <th>통화</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if(!count($output->oProduct->circu_list)){
+                        echo "<tr><td colspan='5' style='text-align:center;'>This Product Type Not has Circurator.</td></tr>";
+                    }else{
+                        foreach($output->oProduct->circu_list as $circu){
+                            $circu = $output->circu_list[$circu->circu_srl];
+                            echo "<tr>";
+                            echo "<td><input type='checkbox' class='cart' name='cart[]' value='{$circu->circu_srl}' /></td>";
+                            echo "<td>{$circu->subs_title}</td>";
+                            echo "<td>{$circu->region}</td>";
+                            echo "<td>{$circu->circu_title}</td>";
+                            echo "<td>{$circu->currency}</td>";
+                            echo "</tr>";
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <div class="mailbox-controls">
+                <!-- Check all button -->
+                <button type="submit" class="btn btn-danger btn-sm checkbox-toggle">
+                    <i class="fa fa-trash"></i> delete checked circurator
+                </button>
+            </div>
+            </form>
+            <!-- /.table -->
+        </div>
+        <!-- /.mail-box-messages -->
+    </div>
+
+    <script type="text/javascript">
+        function toggleCart(obj){
+            if($(obj).is(":checked")){
+                $(".cart").attr("checked","checked");
+            }else{
+                $(".cart").removeAttr("checked");
+            }
+        }
+        function addCircu(obj){
+            var html = "";
+            html += '<div class="pull-left" style="margin-right:15px;">';
+            html += '<button class="btn btn-xs btn-warning" onclick="$(this).parent().remove();"><i class="fa fa-close"></i> ' +
+                $(obj).find("option:selected").html() +
+                '</button>';
+            html += '<input type="hidden" name="circu_srls[]" value="' + $(obj).val() + '" />';
+            html += '</div>';
+            $("#add_circu_list").append(html);
+        }
+    </script>

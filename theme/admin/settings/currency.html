@@ -1,0 +1,97 @@
+<?php
+include $module_info->theme_path . "_head.php";
+
+?>
+
+<?=loadHeader("통화관리","Subsdiary Settings")?>
+
+
+<section class="content">
+
+    <div class="row">
+        <div class="col-sm-4">
+<!--            insert-->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Add New Currency Type</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">CODE</label>
+                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="ex) USD (not distinct)">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">CHAR</label>
+                            <input type="text" class="form-control" id="exampleInputPassword1" placeholder="ex) $">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputFile">Currency Title</label>
+                            <input type="text" class="form-control" id="exampleInputFile" placeholder="미국 달러">
+                        </div>
+                        <div class="form-group">
+                            <label for="rate">to USD Rate</label>
+                            <input type="text" class="form-control" id="rate" placeholder="1.00">
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary">Add Currency</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-8">
+        <!-- TABLE: LATEST ORDERS -->
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">Currency List</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="table-responsive">
+                    <table class="table no-margin">
+                        <thead>
+                        <tr>
+                            <th>통화코드</th>
+                            <th>표시기호</th>
+                            <th>설명</th>
+                            <th>to USD</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <?php
+                        foreach($output->data as $currency){
+                            echo "<tr>";
+                            echo "<td><a href='#' class=\"btn btn-xs btn-info btn-flat pull-right\" onclick='return false'>{$currency->code}</a></td>";
+                            echo "<td>{$currency->char}</td>";
+                            echo "<td>{$currency->title}</td>";
+                            echo "<td><input type='text' name='to_usd' value='{$currency->to_usd}' /></td>";
+                            echo "</td>";
+                            echo "</tr>";
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+                <a href="#" class="btn btn-sm btn-info btn-flat pull-right"><i class="fa fa-refresh"></i> Update F/X Rate</a>
+            </div>
+            <!-- /.box-footer -->
+        </div>
+        <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        </div>
+    </div>
+</section>
+<?php
+include $module_info->theme_path . "_tail.php";
+?>

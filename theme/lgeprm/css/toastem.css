@@ -1,0 +1,66 @@
+
+#toastem{
+    position: fixed;
+    z-index: 2000;
+    top: 12px;
+    right: 12px;
+}
+#toastem .notification{
+    display: block;
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 20px;
+    width: 300px;
+    border-radius: 3px;
+    color: white;
+    right: -400px;
+    /*box-shadow: 0px 1px 5px #bbbbbb;*/
+}
+#toastem .info{
+    cursor:pointer;
+    background: #0a9dc7;
+}
+#toastem .normal{
+    background: #3c3b3b;
+}
+#toastem .success{
+    background: #5CD1E5;
+}
+#toastem .error{
+    background: #FF5E00;
+}
+
+#toastem .call{
+    background: #44be75;
+}
+
+#toastem .call .licon{
+    font-size:20px;
+    padding:5px;
+}
+#toastem .call hr{
+    margin:3px;
+}
+#toastem .call .iconmenu{
+    float:left;
+    text-align:center; padding:3px;
+    width:25%;
+}
+#toastem .call .iconmenu i{
+    border:1px solid #fff;
+    border-radius:50%;
+    padding:10px;
+    cursor:pointer;
+}
+#toastem .call .iconmenu:hover i{
+    background:#FFF;
+    color:#44be75;
+}
+
+#toastem .call .iconmenu span{
+    font-size:11px;
+    display:block;
+    margin-top:5px;
+}

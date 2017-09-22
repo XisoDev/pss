@@ -1,0 +1,80 @@
+<form id="updateForm" action="<?=$domain?>settings/procProductTypeUpdate/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="dept_srl" value="<?=$_GET['dept_srl']?>" />
+    <!-- /.box-header -->
+    <div class="box-body no-padding">
+        <div class="mailbox-controls">
+            <div class="has-feedback">
+                <div class="form-group">
+                    <label for="table_id">TableID</label>
+                    <input type="text" class="form-control" id="table_id" name="table_id" readonly="readonly" value="<?=$output->oProduct->table_id?>" />
+                </div>
+                <div class="form-group">
+                    <label for="product_title">Product Type</label>
+                    <input type="text" class="form-control" id="product_title" name="product_title" value="<?=$output->oProduct->product_title?>" />
+                </div>
+                <small>Create Date - <?=zdate($output->oProduct->regdate,"Y년 m월 d일")?></small>
+            </div>
+        </div>
+        <div class="table-responsive mailbox-messages">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Header</th>
+                            <th colspan="3">Select Models</th>
+                            <th colspan="3">Spec</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>Use</th>
+                            <th>Display Name</th>
+                            <th>Order</th>
+                            <th>Use</th>
+                            <th>Header</th>
+                            <th>Display Name</th>
+                            <th>Order</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($output->field_list as $field){ ?>
+                        <tr>
+                            <td><input type="hidden" name="field[]" value="<?=$field->field?>" /><?=$field->field?></td>
+                            <td><input name="<?=$field->field?>_th" type="text" class="form-control" value="<?=$field->th?>" style="max-width:100px;" /></td>
+                            <?php
+                                if($field->model_use == "Y") $checked = "checked='checked'";
+                                else $checked = false;
+                            ?>
+                            <td><input name="<?=$field->field?>_model_use" type="checkbox" <?=$checked?> value="Y" /></td>
+                            <td><input name="<?=$field->field?>_model_display" type="text" class="form-control" value="<?=$field->model_display?>" /></td>
+                            <td><input name="<?=$field->field?>_model_order" type="number" class="form-control" value="<?=$field->model_order?>" style="max-width:60px;" /></td>
+
+                            <?php
+                            if($field->spec_use == "Y") $checked = "checked='checked'";
+                            else $checked = false;
+                            ?>
+                            <td><input name="<?=$field->field?>_spec_use" type="checkbox" <?=$checked?> value="Y" /></td>
+
+                            <?php
+                            if($field->spec_header == "Y") $checked = "checked='checked'";
+                            else $checked = false;
+                            ?>
+                            <td><input name="<?=$field->field?>_spec_header" type="checkbox" <?=$checked?> value="Y" /></td>
+
+                            <td><input name="<?=$field->field?>_spec_display" type="text" class="form-control" value="<?=$field->spec_display?>" /></td>
+                            <td><input name="<?=$field->field?>_spec_order" type="number" class="form-control" value="<?=$field->spec_order?>" style="max-width:60px;" /></td>
+                        </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
+                <div class="mailbox-controls">
+                    <!-- Check all button -->
+                    <button type="submit" class="btn btn-primary btn-sm checkbox-toggle">
+                        <i class="fa fa-refresh"></i> update Product Type
+                    </button>
+                </div>
+            <!-- /.table -->
+        </div>
+        <!-- /.mail-box-messages -->
+    </div>
+</form>

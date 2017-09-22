@@ -1,0 +1,87 @@
+<?php
+include $module_info->theme_path . "_head.php";
+?>
+
+<?=loadHeader("Member Settings","회원목록")?>
+
+<section class="content">
+
+<!-- TABLE: LATEST ORDERS -->
+<div class="box box-info">
+    <div class="box-header with-border">
+        <h3 class="box-title">Member Lists</h3>
+
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-xs btn-danger btn-flat pull-right toggle_modify" title="Toggle ModifyMode" onclick="toggleModify('delete');"><i class="fa fa-trash"></i></button>
+            <button type="button" class="btn btn-xs btn-info btn-flat pull-right toggle_delete" title="Toggle DeleteMode" onclick="toggleModify('modify');" style="display:none;"><i class="fa fa-wrench"></i></button>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <div class="table-responsive">
+            <table class="table no-margin">
+                <thead>
+                <tr>
+                    <th>emp_no</th>
+                    <th>user ID</th>
+                    <th>user NAME</th>
+                    <th>Dept</th>
+                    <th>Grade</th>
+                    <th>Type</th>
+                    <th>Auth</th>
+                    <th>Create date</th>
+                    <th>Function</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <?php
+                    foreach($output->data as $member_info){
+                        echo "<tr>";
+                        echo "<td><a href='#' onclick='return false'>{$member_info->emp_no}</a></td>";
+                        echo "<td>{$member_info->user_id}</td>";
+                        echo "<td>{$member_info->user_name}</td>";
+                        echo "<td>{$member_info->dept}</td>";
+                        echo "<td>{$member_info->rank}</td>";
+                        echo "<td>{$member_info->type_srl}</td>";
+                        echo "<td>";
+                            echo ($member_info->is_denied == "Y") ? "<span class=\"label label-warning\">대기</span>" : "<span class=\"label label-success\">승인</span>";
+                        echo "</td>";
+                        echo "<td>" . zdate($member_info->regdate,'m월 d일') . "</td>";
+                        echo "<td>";
+                            echo "<a href=\"{$domain}settings/dispMemberCreate/{$member_info->member_srl}\" class=\"btn btn-sm toggle_modify btn-info btn-flat pull-left\">Modify</a>";
+                            echo "<a href=\"{$domain}settings/procMemberDelete/{$member_info->member_srl}\" class=\"btn btn-sm toggle_delete btn-danger btn-flat pull-left\" style='display:none;'>Delete</a>";
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                ?>
+                </tbody>
+            </table>
+        </div>
+        <!-- /.table-responsive -->
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer clearfix">
+        <a href="<?=$domain?>settings/dispMemberCreate" class="btn btn-sm btn-info btn-flat pull-left"><i class="fa fa-plus"></i> Add New Member</a>
+        <a href="<?=$domain?>settings/dispMemberPermission" class="btn btn-sm btn-default btn-flat pull-right"><i class="fa fa-cog"></i> Member Type Setting</a>
+    </div>
+    <!-- /.box-footer -->
+</div>
+<!-- /.box -->
+</div>
+<!-- /.col -->
+</section>
+<script type="text/javascript">
+    function toggleModify(type){
+        if(type == 'modify'){
+            $(".toggle_modify").show();
+            $(".toggle_delete").hide();
+        }else{
+            $(".toggle_modify").hide();
+            $(".toggle_delete").show();
+        }
+    }
+</script>
+<?php
+include $module_info->theme_path . "_tail.php";
+?>

@@ -1,0 +1,40 @@
+<div class="row">
+<?php
+    $col_width = floor(12 / count($output->data->design_group) );
+    foreach($output->data->design_group as $wrap => $groups){
+        echo "<div class='col-sm-{$col_width}'>";
+            echo "<div class=\"box box-info\">";
+        echo "<div class=\"box-body text-center\">";
+        foreach($groups as $group){
+            if($group == $output->data->design_id) $active = 'active';
+            else $active = false;
+
+            echo "<div class='$active design_item' data-group='".$group."'>" . $group . "</div>";
+        }
+        echo "</div>";
+        echo "</div>";
+        echo "</div>";
+    }
+?>
+</div>
+<article id="fixedWidget">
+    <div class="whiteBG">
+        <form method="post" action="<?=$domain?>prm/procUpdateDesign/<?=$module_info->seq?>">
+            <input type="hidden" name="success_return_url" value="<?=$current_url_clear?>?step=<?=$step+1?>" />
+            <input type="hidden" name="error_return_url" value="<?=$current_url_clear?>?step=<?=$step?>" />
+            <input type="hidden" name="design_id" value="<?=$output->data->design_id?>" />
+            <button type="submit" id="is_save" href="#" class="btn bg-maroon btn-flat"><i class="fa fa-save"></i> SAVE & Next Step </button>
+        </form>
+        <h4>Selected Design Group : <em id="selected_group"><?=$output->data->design_id ? $output->data->design_id : 'not selected'?></em></h4>
+    </div>
+</article>
+
+<script type="text/javascript">
+    $(".design_item").click(function(){
+        $(".design_item").removeClass('active');
+        $(this).addClass('active');
+        $("#selected_group").html($(this).attr('data-group'));
+        $("input[name=design_id]").val($(this).attr('data-group'));
+
+    });
+</script>

@@ -1,0 +1,24 @@
+<?php
+include $module_info->template_path."_settings.php";
+include $module_info->theme_path."_head.sub.php";
+?>
+
+    <div id="toastem"></div>
+
+    <!-- Mixins-->
+    <!-- Pen Title-->
+    <div class="pen-title">
+        <h1>PRM SYSTEM</h1><span>LGE <a href='#'>Product Road Map</a></span>
+    </div>
+    <div class="container">
+        <div class="card"></div>
+        <div class="card">
+            <h1 class="title">is Logged!</h1>
+            <div style="text-align:center;">
+                <p>이미 로그인 되어있습니다.</p>
+                <a href="<?=$domain?>">홈으로 가기</a>
+            </div>
+
+        </div>
+    </div>
+<?php include $module_info->theme_path."_tail.sub.php";?>

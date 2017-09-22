@@ -1,0 +1,140 @@
+<?php
+include $module_info->theme_path . "_head.php";
+
+?>
+
+<?=loadHeader("제품유형별 관리","Product Settings")?>
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-3">
+<!--            HELP Modal window-->
+            <a href="#" class="btn btn-info btn-block margin-bottom" data-toggle="modal" data-target="#help-window">HELP</a>
+            <div class="modal modal-default fade" id="help-window">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">각 제품 유형별 설정을 할 수 있습니다.</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>제품 유형별 기본이되는 데이터는 <span class="btn btn-info btn-xs">최초 업로드한 CSV</span> 입니다.</p>
+                            <p>생성된 PRM, Rolling 등과의 충돌을 방지하기 위해 <span class="btn btn-danger btn-xs">필드추가/삭제 및 제품유형의 삭제는 불가능</span>합니다.
+                                <br />만약 유형이 잘못 생성되었다면 관리자에게 충분한 검토 후 삭제할 수 있도록 요청하거나, Product Type의 명칭만을 사용되지 않도록 변경하거나, 이 유형을 비활성화 하실 수 있습니다.</p>
+                            <p>판매법인 정보는 사용을 위해 참조한 유통정보를 통해 생성하고, 생산법인 정보는 업로드된 매트릭스 레코드에 포함된 생산법인 코드를 참조하여 목록을 생성합니다.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-outline">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--            사업부선택-->
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Dept</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <?php
+                        foreach($output->dept as $dept){
+                            if($dept->dept_srl == $_GET['dept_srl']) $active = "class='active'";
+                            else $active = "";
+
+                            $link = $act_url . "?dept_srl=" . $dept->dept_srl;
+                            echo "<li $active><a href=\"$link\"> {$dept->dept_title}</a></li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+<!--            제품유형 선택-->
+            <?php if($output->product){ ?>
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Product Types</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <?php
+                        foreach($output->product as $product){
+                            if($product->product_srl == $module_info->seq) $active = "class='active'";
+                            else $active = "";
+
+                            $link = $act_url . $product->product_srl . "?dept_srl=" . $_GET['dept_srl'];
+                            echo "<li $active><a href=\"$link\"> {$product->product_title}</a></li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <?php } //end dept_srl ?>
+        </div>
+<!--        선택된 유형의 각종 설정-->
+        <div class="col-md-9">
+            <div class="nav-tabs-custom">
+                <?php if($output->oProduct) { ?>
+                <ul class="nav nav-tabs">
+                    <li <?=(!$_GET['tab']) ? "class='active'" : false?>><a href="<?=$current_url_clear?>" >Circurator</a></li>
+                    <li <?=($_GET['tab'] == 'designgroup') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=designgroup" >Design Group</a></li>
+                    <li <?=($_GET['tab'] == 'salefees') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=salefees" >SaleSubs</a></li>
+                    <li <?=($_GET['tab'] == 'procfees') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=procfees" >ProcSubs</a></li>
+                    <li <?=($_GET['tab'] == 'stepup') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=stepup" >StepUpLogic</a></li>
+                    <li <?=($_GET['tab'] == 'option') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=option" >Option</a></li>
+                    <li <?=($_GET['tab'] == 'matrix') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=matrix" >Matrix</a></li>
+                    <li class="pull-right"><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=settingfield" class="text-muted" <?=($_GET['tab'] == 'settingfield') ? "style=color:red !important;" : false?>>
+                            <i class="fa fa-gear"></i></a>
+                    </li>
+                </ul>
+                <?php } //end oProduct ?>
+                <div class="box-body">
+                    <?php
+                        if(!$output->oProduct) {
+                            echo "<h4>사업부와 Product Type을 선택하십시오.</h4>";
+                        }else{
+                            switch($_GET['tab']){
+                                case "designgroup" : include $module_info->template_path . "tabs/designgroup.html";
+                                    break;
+                                case "salefees" : include $module_info->template_path . "tabs/salefees.html";
+                                    break;
+                                case "procfees" : include $module_info->template_path . "tabs/procfees.html";
+                                    break;
+                                case "settingfield" : include $module_info->template_path . "tabs/settingfield.html";
+                                    break;
+                                default : include $module_info->template_path . "tabs/circurator.html";
+                                    break;
+                            }
+//                            echo "<div class=\"tab-pane active\" id=\"tab_circu\">유통을 참조형태로 추가함</div>
+        //                    <div class=\"tab-pane active\" id=\"tab_salefees\">추가된 유통들이 참조하고있는 Subs를 groupby로 불러 판관비입력하도록 함</div>
+        //                    <div class=\"tab-pane active\" id=\"tab_salefees\">생성된 Matrix상의 commfield에 있는 sale fees Subsdiary를 groupby 로 불러 생산비용 입력하도록 함.</div>
+        //                    <div class=\"tab-pane active\" id=\"tab_stepup\">스탭업로직 이미지를 등록할 수 있도록 함.</div>
+        //                    <div class=\"tab-pane active\" id=\"tab_option\">생성된 Matrix에 사용된 모든 Option을 Groupby 하여 mailbox list를 사용해 아이콘, 툴팁, display Name을 관리할 수 있도록 함.</div>
+        //                    <div class=\"tab-pane active\" id=\"tab_matrix\">매트릭스 필드의 PRM운영상태를 변경하거나, 수정/추가가 되도록 함.</div>
+        //                    <div class=\"tab-pane active\" id=\"tab_settingfield\">필드의 사용유무, 순서 등을 설정할 수 있는, 제품유형 추가시 로드되는 최초의 페이지.</div>";
+                        }
+                    ?>
+                </div>
+                <!-- /.tab-content -->
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+</section>
+<?php
+include $module_info->theme_path . "_tail.php";
+?>

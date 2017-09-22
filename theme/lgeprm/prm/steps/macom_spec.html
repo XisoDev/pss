@@ -1,0 +1,67 @@
+<?php
+    //arrange
+    $spec_fields = array();
+    foreach($output->data->field_spec as $field => $info){
+        if($info['spec_use'] != "Y") continue;
+        $spec_fields[$info['spec_order']] = $info;
+        $spec_fields[$info['spec_order']]['field'] = $field;
+        $spec_fields[$info['spec_order']]['th'] = $output->data->field_th[$field];
+    }
+
+    //정렬 이후에 해야 안꼬임 ㅡ ㅡ하..
+    sort($spec_fields);
+
+    $cur_th = "";
+    $cur_key = 0;
+    foreach($spec_fields as $key => $field){
+        //cnt
+        if($field['th'] != $cur_th){
+            $cur_th = $field['th'];
+            $cur_key = $key;
+            $spec_fields[$key]['cnt'] = 1;
+        }else{
+            $spec_fields[$key]['cnt'] = 0;
+            $spec_fields[$cur_key]['cnt'] = $spec_fields[$cur_key]['cnt'] + 1;
+        }
+    }
+?>
+
+    <div class="box">
+        <div class="table-responsive">
+        <table class="table no-margin specTable">
+            <thead>
+                <th colspan="2">
+                    <b>SPECIFICATIONS</b>
+                </th>
+                <?php
+                foreach($output->data->models as $model){
+                    echo "<td><div class='thumbnail'></div></td>";
+                }
+                ?>
+            </thead>
+            <?php
+            $colspan = 1;
+            foreach($spec_fields as $key => $field) {
+                echo "<tr>";
+                if($field['spec_header'] == "Y"){
+                    if($field['cnt'] != 0) {
+                        echo "<th class=\"header\" rowspan='{$field['cnt']}'>{$field['th']}</th>";
+                    }
+                    $colspan = 1;
+                }else{
+                    $colspan = 2;
+                }
+                echo "<th class=\"field\" colspan='{$colspan}'>{$field['spec_display']}</th>";
+//                    여기서부터 각모델에서 데이터를 호출해와야함.
+                    foreach($output->data->models as $model){
+                        echo "<td>";
+                        echo $model->{$field['field']};
+                        echo "</td>";
+                    }
+//                    여기까지
+                echo "</tr>";
+            }
+            ?>
+        </table>
+        </div>
+    </div>
