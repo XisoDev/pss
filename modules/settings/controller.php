@@ -213,6 +213,10 @@ class settingsController{
 
     }
 
+    function replaceField($str){
+        $pure_field = preg_replace('#[^a-zA-Z_]#', '', $str);
+        return strtolower($pure_field);
+    }
 
 //    제품유형 생성
     function procProductTypeInsert($args){
@@ -250,8 +254,7 @@ class settingsController{
                     if($key == 1){
                         foreach($val as $k => $field){
 
-                            $pure_field = strtolower(preg_replace("/\s+/", "", $field));
-                            $pure_field = preg_replace("/[^a-zA-Z/s", "", $pure_field);
+                            $pure_field = $this->replaceField($field);
 
                             if(strpos($csvArray[0][$k],"common") !== false){
                                 $check_common_fields[] = $pure_field;
@@ -271,9 +274,7 @@ class settingsController{
                     }else{
                         $data = array();
                         foreach($val as $k => $v){
-                            $pure_field = strtolower(preg_replace("/\s+/", "", $csvArray[1][$k]));
-                            $pure_field = preg_replace("/[^a-zA-Z/s", "", $pure_field);
-                            $data[$pure_field] = $v;
+                            $data[$this->replaceField($csvArray[1][$k])] = $v;
                         }
                         $matrix[] = $data;
                     }
