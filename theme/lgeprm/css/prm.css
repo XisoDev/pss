@@ -108,6 +108,8 @@
 .modelTable td ul li{
     flex: 1;
 
+    min-height:90px;
+
     display: flex;
     justify-content: center;
     flex-direction: column;

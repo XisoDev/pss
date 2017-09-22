@@ -14,6 +14,7 @@ class prmModel{
         if(count($args->conditions) > 0){
             $where = array();
             foreach($args->conditions as $key => $val){
+                $val = addslashes($val);
                 $where[] = "`$key` = '$val'";
             }
             $where = join(" and ",$where);
@@ -46,6 +47,7 @@ class prmModel{
 
         if(count($args->conditions) > 0){
             foreach($args->conditions as $key => $val){
+                $val = addslashes($val);
                 $where[] = "`$key` = '$val'";
             }
         }
@@ -70,6 +72,7 @@ class prmModel{
 
         $output = new Object();
         $output->enable_fields = $enable_fields;
+        $output->where = $where;
         return $output;
     }
 

@@ -23,7 +23,6 @@ class prmView{
 
     function create(){
         global $module_info;
-
         $output = new Object();
 
         //set dept list
