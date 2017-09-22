@@ -132,7 +132,7 @@
     color:#FFF;
 }
 .modelTable td ul li.active{
-    background: #ff6264;
+    background: rgba(173,25,71,0.7);
     border :1px solid #ad1947;
 }
 
