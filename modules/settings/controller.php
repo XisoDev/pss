@@ -198,12 +198,17 @@ class settingsController{
             $field_spec[$field]['spec_use'] = $args->{$field . '_spec_use'} == "Y" ? "Y" : "N";
             $field_spec[$field]['spec_header'] = $args->{$field . '_spec_header'} == "Y" ? "Y" : "N";
             $field_spec[$field]['spec_order'] = $args->{$field . '_spec_order'};
+
+            $field_info[$field] = array();
+            $field_info[$field]['info_use'] = $args->{$field . '_info_use'} == "Y" ? "Y" : "N";
+            $field_info[$field]['info_order'] = $args->{$field . '_info_order'};
         }
 
         $obj = new stdClass();
         $obj->field_th = serialize($field_th);
         $obj->field_model = serialize($field_model);
         $obj->field_spec = serialize($field_spec);
+        $obj->field_info = serialize($field_info);
         $obj->product_title = $args->product_title;
 
         $query = updateQueryString("product",$obj);
@@ -274,6 +279,9 @@ class settingsController{
                             $fields[$k]["spec_display"] = $field;
                             $fields[$k]["spec_use"] = "N";
                             $fields[$k]["spec_order"] = $k * 10;
+
+                            $fields[$k]["info_use"] = "N";
+                            $fields[$k]["use_order"] = $k * 10;
                         }
                     }else{
                         $data = array();
@@ -325,10 +333,15 @@ class settingsController{
                     $field_spec[$field['field']]['spec_display'] = $field['spec_display'];
                     $field_spec[$field['field']]['spec_use'] = $field['spec_use'];
                     $field_spec[$field['field']]['spec_order'] = $field['spec_order'];
+
+                    $field_info[$field['field']] = array();
+                    $field_info[$field['field']]['info_use'] = $field['info_use'];
+                    $field_info[$field['field']]['info_order'] = $field['info_order'];
                 }
                 $obj->field_th = serialize($field_th);
                 $obj->field_model = serialize($field_model);
                 $obj->field_spec = serialize($field_spec);
+                $obj->field_info = serialize($field_info);
                 $obj->regdate = date("YmdHis");
                 $obj->list_order = $obj->product_srl * -1;
                 $insert_result = insertQuery("product",$obj);

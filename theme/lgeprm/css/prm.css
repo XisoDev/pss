@@ -159,12 +159,16 @@
 }
 .model_item .info{
     float: left;
+    max-width:150px;
+    word-wrap:break-word;
     padding: 5px 0 0 10px;
 }
 .model_item .info p{
     color:#AAA;
+    float:left;
     font-size:12px;
     padding:0;
+    padding-right:10px;
     margin:0;
 }
 .model_item .btn_area{

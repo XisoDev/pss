@@ -118,9 +118,7 @@
                     echo "<div class=\"model_item draggable \" style='top:{$cur_top}px' data-model-no='{$no}'>
                             <div class=\"thumbnail\"></div>
                         <div class=\"info\">
-                            <h4>{$model->model} ({$model->prod_subs})</h4>
-                            <p>{$model->category} / {$model->cmf}</p>
-                            <p>{$model->exterior}</p>
+                            {$model->infohtml}
                             <span class='rrp btn btn-xs btn-success'>{$output->data->currency_char} {$rrp}</span>
                         </div>
                     </div>";
@@ -153,9 +151,7 @@
                         echo "<div class=\"model_item model_{$no}\" style='top:{$heights[$no]}px'>
                         <div class=\"info\">
                             <div class=\"thumbnail\"></div>
-                            <h4>{$model->model} ({$model->prod_subs})</h4>
-                            <p>{$model->category} / {$model->cmf}</p>
-                            <p>{$model->exterior}</p>
+                            {$model->infohtml}
                             <span class='rrp btn btn-xs btn-success'>{$output->data->currency_char} {$rrp}</span>
                         </div>
                     </div>";

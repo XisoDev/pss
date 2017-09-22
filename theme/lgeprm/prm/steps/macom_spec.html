@@ -15,7 +15,11 @@
     $cur_key = 0;
     foreach($spec_fields as $key => $field){
         //cnt
-        if($field['th'] != $cur_th){
+        if($field['spec_header'] != "Y"){
+            $cur_th = "";
+            $cur_key = $key;
+            $spec_fields[$key]['cnt'] = 1;
+        }else if($field['th'] != $cur_th){
             $cur_th = $field['th'];
             $cur_key = $key;
             $spec_fields[$key]['cnt'] = 1;

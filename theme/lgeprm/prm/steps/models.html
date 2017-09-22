@@ -89,9 +89,7 @@ sort($model_fields);
                                 <input type=\"hidden\" class=\"model_cart\" name=\"model_cart[]\" value=\"{$model->no}\" />
                                 <div class=\"thumbnail\"></div>
                                 <div class=\"info\">
-                                    <h4>{$model->model} ({$model->prod_subs})</h4>
-                                    <p>{$model->category} / {$model->cmf}</p>
-                                    <p>{$model->exterior}</p>
+                                   {$model->infohtml}
                                     <p class=\"pull-right\">
                                         <button onclick=\"removeModel(this)\" class=\"btn btn-xs btn-danger\">
                                             <i class=\"fa fa-trash\"></i>
@@ -165,9 +163,7 @@ sort($model_fields);
             '<input type="hidden" class="model_cart" name="model_cart[]" value="' + model.no + '" />' +
             '<div class="thumbnail"></div>' +
             '<div class="info">' +
-            '<h4>' + model.model + ' (' + model.prod_subs + ')</h4>' +
-            '<p>' + model.category + ' / ' + model.cmf + '</p>' +
-            '<p>' + model.exterior + '</p>' +
+            model.infohtml +
             '<p class="pull-right">' +
             '<button onclick="removeModel(this)" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>';
         html += '</p></div></div>';
@@ -230,9 +226,7 @@ sort($model_fields);
                 var html = '<div class="col-xs-12 model_item">' +
                     '<div class="thumbnail"></div>' +
                     '<div class="info">' +
-                    '<h4>' + model.model + ' (' + model.prod_subs + ')</h4>' +
-                    '<p>' + model.category + ' / ' + model.cmf + '</p>' +
-                    '<p>' + model.exterior + '</p>' +
+                    model.infohtml +
                     '<p class="btn_area">';
 
                 if(model.use_prm != "Y"){
@@ -246,7 +240,7 @@ sort($model_fields);
                 html += '</p></div></div>';
                 $("#selected_models_list").append(html);
             }
-
+            console.log(models);
             //open Modal
             $('#selected_models').modal('show');
         }

@@ -6,6 +6,23 @@ class prmModel{
 
     }
 
+    function getModelHTML($model,$field_info){
+        $use_fields = array();
+        foreach($field_info as $field => $info){
+            if($info['info_use'] == "Y"){
+                $use_fields[$info['info_order']] = $field;
+            }
+        }
+        sort($use_fields);
+
+        $html = "<h4>{$model->model} ({$model->prod_subs})</h4>";
+        foreach($use_fields as $field){
+            $html .= "<p>" . $model->{$field} . "</p>";
+        }
+
+        return $html;
+    }
+
     //select models search
     function getModels($args){
         if(!$args->table_id) return new Object(-1, "검색 대상이 지정되지 않았습니다.");
@@ -26,6 +43,14 @@ class prmModel{
         $list = sql_query_array($query);
         $output = new Object();
         $output->model_list = $list->data;
+
+        $field_info = sql_fetch("SELECT `field_info` FROM `product` where `table_id` = '{$table_id}'");
+        $field_info = unserialize($field_info['field_info']);
+
+        foreach($output->model_list as $key => $model){
+            $model->infohtml = $this->getModelHTML($model,$field_info);
+            $output->model_list[$key] = $model;
+        }
 
         return $output;
     }
@@ -155,6 +180,12 @@ class prmModel{
                     $query = sprintf($query,$row->table_id,$row->table_id,$row->table_id,$oPRM->product_srl,$row->models);
 
                     $row->models = sql_query_array($query)->data;
+                    if(count($row->models)){
+                        foreach($row->models as $key => $model){
+                            $model->infohtml = $this->getModelHTML($model,$oPRM->field_info);
+                            $row->models[$key] = $model;
+                        }
+                    }
                 }else{
                     continue;
                 }
@@ -278,9 +309,17 @@ class prmModel{
         $oPRM->field_th = unserialize($oProduct->field_th);
         $oPRM->field_model = unserialize($oProduct->field_model);
         $oPRM->field_spec = unserialize($oProduct->field_spec);
+        $oPRM->field_info = unserialize($oProduct->field_info);
         $oPRM->design_group = unserialize($oProduct->design_group);
         $oPRM->product_title = $oProduct->product_title;
         $oPRM->dept_title = $oProduct->dept_title;
+
+        if(count($oPRM->models)){
+            foreach($oPRM->models as $key => $model){
+                $model->infohtml = $this->getModelHTML($model,$oPRM->field_info);
+                $oPRM->models[$key] = $model;
+            }
+        }
 
         //addCurrency
         $query = "select * from `currency` where `code` = '{$oPRM->currency}'";

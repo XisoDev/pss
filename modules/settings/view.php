@@ -143,6 +143,7 @@ class settingsView {
             $oProduct->field_th = unserialize($oProduct->field_th);
             $oProduct->field_model = unserialize($oProduct->field_model);
             $oProduct->field_spec = unserialize($oProduct->field_spec);
+            $oProduct->field_info = unserialize($oProduct->field_info);
             $oProduct->design_group = unserialize($oProduct->design_group);
             $output->oProduct = $oProduct;
         }
@@ -233,6 +234,9 @@ class settingsView {
                 $field_list[$field]->spec_use = $oProduct->field_spec[$field]['spec_use'];
                 $field_list[$field]->spec_header = $oProduct->field_spec[$field]['spec_header'];
                 $field_list[$field]->spec_order = $oProduct->field_spec[$field]['spec_order'];
+//                spec
+                $field_list[$field]->info_use = $oProduct->field_info[$field]['info_use'];
+                $field_list[$field]->info_order = $oProduct->field_info[$field]['info_order'];
             }
 
             $output->field_list = $field_list;
