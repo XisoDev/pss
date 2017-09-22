@@ -13,7 +13,7 @@ class prmModel{
                 $use_fields[$info['info_order']] = $field;
             }
         }
-        sort($use_fields);
+        ksort($use_fields);
 
         $html = "<h4>{$model->model} ({$model->prod_subs})</h4>";
         foreach($use_fields as $field){
