@@ -1,0 +1,11 @@
+putty로 접속 후
+
+* lgeprm 폴더로 이동
+cd /home/lgeprm
+(폴더명은 다를 수 있음)
+
+* files 폴더 생성
+mkdir files
+
+* PHP가 업로드파일을 컨트롤 할 수 있게 권한 설정
+chmod 707 files

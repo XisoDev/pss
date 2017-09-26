@@ -217,6 +217,38 @@ class settingsView {
                 }
                 unset($data);
             }
+        }else if($_GET['tab'] == 'option'){
+            //해당 product의 matrix중, model에 use된 field 리스트를 group by 해서 가져옴.
+
+            $table_id = $oProduct->table_id;
+
+            $model_fields = array();
+            $oSettingController = getController('settings');
+            foreach($oProduct->field_model as $field => $info){
+                if($info['model_use'] != "Y") continue;
+                $model_fields[$info['model_order']] = $info;
+                $model_fields[$info['model_order']]['field'] = $field;
+                $model_fields[$info['model_order']]['th'] = $output->data->field_th[$field];
+
+                $query = sprintf("select %s from product_%s group by %s",$field,$table_id,$field);
+                $list = sql_query_array($query);
+
+                $model_fields[$info['model_order']]['list'] = array();
+                foreach($list->data as $val){
+                    $val = $oSettingController->replaceField($val->{$field},true);
+                    $model_fields[$info['model_order']]['list'][] = $val;
+                }
+            }
+            ksort($model_fields);
+            $output->model_fields = $model_fields;
+
+            //get Options
+            $options = sql_query_array("SELECT * FROM  `options` where `table_id` = '{$table_id}'");
+            $output->options = array();
+            foreach($options->data as $option){
+                if(!is_array($output->options[$option->field])) $output->options[$option->field] = array();
+                $output->options[$option->field][$option->record] = $option;
+            }
         }else if($_GET['tab'] == 'settingfield'){
 
             //arrange FieldList

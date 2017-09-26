@@ -47,5 +47,10 @@ require_once _XISO_PATH_."inc/func.inc.php";
 require_once _XISO_PATH_."inc/Object.class.php";
 require_once _XISO_PATH_."inc/PageHandler.class.php";
 
+require_once _XISO_PATH_."inc/file/FileObject.class.php";
+require_once _XISO_PATH_."inc/file/FileHandler.class.php";
+require_once _XISO_PATH_."inc/security/Password.class.php";
+
+
 
 ?>

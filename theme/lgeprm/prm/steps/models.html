@@ -3,6 +3,7 @@
     //set Matrix data
     $table_id = $output->data->table_id;
 
+    $oSettingController = getController('settings');
     $model_fields = array();
     foreach($output->data->field_model as $field => $info){
         if($info['model_use'] != "Y") continue;
@@ -19,8 +20,27 @@
         }
     }
     ksort($model_fields);
-?>
 
+    //get Options
+    $options_sql = sql_query_array("SELECT * FROM  `options` where `table_id` = '{$table_id}'");
+    $options = array();
+    foreach($options_sql->data as $option){
+        if(!is_array($output->options[$option->field])) $output->options[$option->field] = array();
+        $options[$option->field][$option->record] = $option;
+    }
+
+?>
+<style>
+    .model_icon{
+        width:80%;
+        max-width:90px;
+        margin:0 auto;
+        height:80px;
+        background-position:center;
+        background-size:contain;
+        background-repeat:no-repeat;
+    }
+</style>
 <div style="padding-bottom: 200px;">
     <div class="table-responsive" style="overflow-y:hidden;">
         <table class="table no-margin modelTable">
@@ -62,8 +82,26 @@
                     <td>
                         <ul>
                             <?php foreach($field['list'] as $val){ ?>
-                            <li class="field_item field_<?=$field['field']?>" data-field="<?=$field['field']?>" data-value="<?=$val?>" onclick="changeField('<?=$field['field']?>',this);">
-                                <?=$val?>
+                            <li class="field_item field_<?=$field['field']?>"
+                                data-field="<?=$field['field']?>" data-value="<?=$val?>" onclick="changeField('<?=$field['field']?>',this);"
+                                <?php
+                                    $item = $oSettingController->replaceField($val,true);
+                                    $option = $options[$field['field']][$item];
+                                    if($option->tooltip){
+                                        echo "data-toggle=\"tooltip\" data-html=\"true\" data-original-title=\"" . nl2br($option->tooltip) . "\"";
+                                    }
+                                ?>
+                            >
+                                <?php
+                                    if($option->icon){
+                                        echo "<div class='model_icon' style='background-image:url(" . $domain . $option->icon . ")'></div>";
+                                    }
+                                    if($option->display_name){
+                                        echo $option->display_name;
+                                    }else{
+                                        echo $val;
+                                    }
+                                ?>
                             </li>
                             <?php } ?>
                         </ul>

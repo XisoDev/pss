@@ -2,9 +2,98 @@
 
 class settingsController{
     function init(){
-
     }
+//옵션저장
+    function procProductOptionUpdate($args){
+        global $module_info;
+        if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
 
+        $oProduct = sql_fetch("select * from `product` where `product_srl` = " . $module_info->seq);
+        $table_id = $oProduct['table_id'];
+
+        //아이콘을 일단 먼저업로드 (기존아이콘 삭제하면서 바로 대체)
+        $icons = array();
+        foreach($_FILES as $key => $file){
+            $key_arr = explode("|@|",$key);
+            $key_id = $key_arr[0] . "_" . $key_arr[1];
+            if(is_uploaded_file($file['tmp_name'])){
+                $file_info = $file;
+
+                // A workaround for Firefox upload bug
+                if(preg_match('/^=\?UTF-8\?B\?(.+)\?=$/i', $file_info['name'], $match))
+                {
+                    $file_info['name'] = base64_decode(strtr($match[1], ':', '/'));
+                }
+
+                // https://github.com/xpressengine/xe-core/issues/1713
+                $file_info['name'] = preg_replace('/\.(php|phtm|phar|html?|cgi|pl|exe|jsp|asp|inc)/i', '$0-x',$file_info['name']);
+                // $file_info['name'] = removeHackTag($file_info['name']);
+                $file_info['name'] = str_replace(array('<','>'),array('%3C','%3E'),$file_info['name']);
+
+                // Get random number generator
+                $random = new Password();
+
+                // Set upload path by checking if the attachement is an image or other kinds of file
+                if(preg_match("/\.(jpe?g|gif|png)$/i", $file_info['name']))
+                {
+                    $path = "./files/icons/" . $module_info->seq . "/";
+                    FileHandler::makeDir($path);
+
+                    $_file_ext = substr(strrchr($file_info['name'],'.'),1);
+                    $_file_name = $key_id;
+
+                    $filename = $_file_name. '.' .$_file_ext;
+                }
+                else
+                {
+                    return setReturn(-1, "이미지 형식이 아닙니다.");
+                }
+
+                //기존아이콘 삭제
+                if(file_exists($path . $filename))
+                    unlink($path . $filename);
+
+                //업로드
+                if(!@move_uploaded_file($file_info['tmp_name'], $path . $filename))
+                    return setReturn(-1,'아이콘 업로드에 실패했습니다.');
+
+                //db에등록할 데이터를 대체 (기존아이콘이 있거나말거나 새로업로드된게 있으면 대체)
+                $args->{$key} = $path . $filename;
+            }
+        }
+
+        $insert_obj = array();
+        foreach($args as $key => $val){
+            $key_arr = explode("|@|",$key);
+            $key_id = $key_arr[0] . "_" . $key_arr[1];
+
+            //db에등록할 데이터 정리
+            if(!$insert_obj[$key_id]){
+                $obj = new stdClass();
+                $obj->table_id = $table_id;
+                $obj->field = $key_arr[0];
+                $obj->record = $key_arr[1];
+            }else{
+                $obj = $insert_obj[$key_id];
+            }
+            $obj->{$key_arr[2]} = $val;
+
+            $insert_obj[$key_id] = $obj;
+        }
+
+        //기존 데이터를 전부 제거하고
+        sql_query("delete from `options` where `table_id` = '{$table_id}'");
+        //insert
+        foreach($insert_obj as $obj){
+            $output = insertQuery("options",$obj);
+        }
+
+        if($output->result){
+            return setReturn(0, "등록성공");
+        }else{
+            return setReturn(-1, "옵션 등록에 실패하였습니다.");
+        }
+    }
 //사업부 생성
     function procDeptInsert($args){
         global $module_info;
@@ -220,8 +309,13 @@ class settingsController{
 
     }
 
-    function replaceField($str){
-        $pure_field = preg_replace('#[^a-zA-Z_]#', '', $str);
+    function replaceField($str , $is_num = false){
+        if($is_num == false){
+            $pure_field = preg_replace('#[^a-zA-Z_]#', '', $str);
+        }else{
+            $pure_field = preg_replace("/[^a-zA-Z0-9]/", '', $str);
+        }
+
         return strtolower($pure_field);
     }
 

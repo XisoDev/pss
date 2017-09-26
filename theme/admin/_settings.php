@@ -16,8 +16,8 @@ $addHtmlHeader[] = '<link rel="stylesheet" href="'.$domain.$module_info->theme_p
 $addHtmlHeader[] = '<link rel="stylesheet" href="'.$domain.$module_info->theme_path.'css/toastem.css">';
 
 
-$addHtmlFooter[] = '<script src="'.$domain.$module_info->theme_path.'assets/bower_components/jquery/dist/jquery.min.js"></script>';
-$addHtmlFooter[] = '<script src="'.$domain.$module_info->theme_path.'assets/bower_components/jquery-ui/jquery-ui.min.js"></script>';
+$addHtmlHeader[] = '<script src="'.$domain.$module_info->theme_path.'assets/bower_components/jquery/dist/jquery.min.js"></script>';
+$addHtmlHeader[] = '<script src="'.$domain.$module_info->theme_path.'assets/bower_components/jquery-ui/jquery-ui.min.js"></script>';
 
 $addHtmlFooter[] = "<script>$.widget.bridge('uibutton', $.ui.button);</script>";
 $addHtmlFooter[] = '<script src="'.$domain.$module_info->theme_path.'assets//bower_components/bootstrap/dist/js/bootstrap.min.js"></script>';

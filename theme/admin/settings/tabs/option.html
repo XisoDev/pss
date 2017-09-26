@@ -1,0 +1,92 @@
+<style>
+    .thumbnail{
+        height:130px; width:140px;background-size:contain; background-position:center; background-repeat:no-repeat;
+        margin-top:15px;
+        cursor:pointer;
+        position:relative;
+    }
+    .thumbnail i{
+        display:none;
+        position:absolute;
+        left:50%;
+        top:50%;
+        -webkit-transform: translate(-50%,-50%);
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
+        color:#FFF;
+    }
+    .thumbnail:hover{
+        background-image:none !important;
+        background-color:rgba(0,0,0,.75);
+    }
+    .thumbnail:hover i{
+        display:block;
+    }
+</style>
+
+<h4>Select Models단계에서 옵션의 표시방법을 설정합니다.</h4>
+
+<form id="insertform" action="<?=$domain?>settings/procProductOptionUpdate/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+<?php
+
+foreach($output->model_fields as $field){
+    echo "<div class='field_box'>";
+    echo "<h3>" . $field['model_display'] . "(".$field['field'].") </h3>";
+    echo "<hr />";
+    echo "<br />";
+    foreach($field['list'] as $item){
+        $option = $output->options[$field['field']][$item];
+    ?>
+    <div class="small-box bg-gray col col-sm-4" style="padding-top:15px;">
+        <div class="col-xs-6">
+            <?php
+                if($option->icon) {
+            ?>
+                <div class="thumbnail icon" style="background-image:url('<?=$domain.$option->icon?>');">
+                    <input type="hidden" name="<?=$field['field']?>|@|<?=$item?>|@|icon" value="<?=$option->icon?>" />
+                    <i class="fa fa-trash"></i>
+                </div>
+            <?php
+                }
+            ?>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="field_<?=$item?>">Display name</label>
+                <input class="form-control" type="text" id="field_<?=$item?>" value="<?=$option->display_name?>" name="<?=$field['field']?>|@|<?=$item?>|@|display_name" />
+            </div>
+            <div class="form-group">
+                <label for="icon_<?=$item?>">iconFile</label>
+                <input class="form-control" type="file" id="icon_<?=$item?>" value="" name="<?=$field['field']?>|@|<?=$item?>|@|icon" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="tooltip_<?=$item?>">toolTip</label>
+            <textarea class="form-control" id="tooltip_<?=$item?>" name="<?=$field['field']?>|@|<?=$item?>|@|tooltip"><?=$option->tooltip?></textarea>
+        </div>
+        <a href="#" class="small-box-footer"> <?=$item?> </a>
+    </div>
+
+    <?php
+    }
+    echo "<div class='clearfix'></div>";
+    echo "<button type='submit' class='btn bg-maroon pull-right'>저장</button>";
+    echo "</div>";
+}
+
+?>
+</form>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function($){
+       $(".thumbnail.icon").click(function(){
+           if(confirm("아이콘을 삭제합니다. 이 작업은 되돌릴 수 없습니다.")){
+               $(this).remove();
+           }
+       })
+    });
+</script>
