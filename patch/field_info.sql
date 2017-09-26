@@ -1,1 +1,0 @@
-ALTER TABLE `product`  ADD `field_info` LONGTEXT NOT NULL AFTER `field_model`;

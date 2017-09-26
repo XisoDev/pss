@@ -1,0 +1,3 @@
+* 각 사업부별 모델 아이템에 표시할 필드를 결정하기 위한 DB테이블 수정.
+
+ALTER TABLE `product`  ADD `field_info` LONGTEXT NOT NULL AFTER `field_model`;
