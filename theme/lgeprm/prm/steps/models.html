@@ -116,8 +116,9 @@
         <form method="post" action="<?=$domain?>prm/procUpdateModel/<?=$module_info->seq?>">
             <input type="hidden" name="success_return_url" value="<?=$current_url_clear?>?step=<?=$step+1?>" />
             <input type="hidden" name="error_return_url" value="<?=$current_url_clear?>?step=<?=$step?>" />
-            <input type="hidden" name="design_id" value="<?=$output->data->design_id?>" /
-            >
+            <input type="hidden" name="design_id" value="<?=$output->data->design_id?>" />
+            <button type="button" id="fxshow" href="#" onclick="$('#fixedWidget').removeClass('underBox');" class="btn bg-aqua btn-flat"><i class="fa fa-eye"></i> SHOW</button>
+            <button type="button" id="fxhide" href="#" onclick="$('#fixedWidget').addClass('underBox');" class="btn bg-aqua btn-flat"><i class="fa fa-eye-slash"></i> HIDE</button>
             <button type="submit" id="is_save" href="#" class="btn bg-maroon btn-flat"><i class="fa fa-save"></i> SAVE & Next Step </button>
             <h4>Model Cart (<span id="model_cart_cnt">0</span>)</h4>
             <div class="row" id="model_cart_list">

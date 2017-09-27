@@ -113,7 +113,6 @@ class prmModel{
     function getSubsCorpByProduct($args){
         if(!$args->product_srl) return new Object(-1, '제품유형이 선택되지 않았습니다.');
 
-
         $query = "SELECT `circu`.`circu_srl`, `circu`.`circu_title`, `circu`.`circu_title_abb`, `subs`.`subs_srl`, `subs`.`subs_title`, `subs`.`region`, `subs`.`currency`";
         $query .= " FROM `circu_product` left join `subs` on `subs`.`subs_srl` = `circu_product`.`subs_srl`";
         $query .= " left join `circu` on `circu`.`circu_srl` = `circu_product`.`circu_srl`";

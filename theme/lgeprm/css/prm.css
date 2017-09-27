@@ -57,11 +57,30 @@
     width:100%;
     z-index:3000;
 }
+#fixedWidget #fxshow{
+    display:none;
+}
+#fixedWidget.underBox{
+    top: 100%;
+    bottom: auto;
+}
+#fixedWidget.underBox #fxshow{
+    display:block;
+}
+#fixedWidget.underBox #fxhide{
+    display:none;
+}
 #fixedWidget .whiteBG{
     position:relative;
     background:#eee;
     padding:15px;
     border-top:2px solid #ad1947;
+}
+#fixedWidget #fxshow,
+#fixedWidget #fxhide{
+    position:absolute;
+    right:140px;
+    bottom:100%;
 }
 #fixedWidget #is_save{
     position:absolute;
@@ -101,7 +120,7 @@
     height:100%;
 }
 .modelTable td ul{
-    height:80vh;
+    height:95vh;
     display: flex;
     flex-direction: column;
 }
