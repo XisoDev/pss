@@ -41,7 +41,7 @@ class settingsController{
                 $random = new Password();
 
                 // Set upload path by checking if the attachement is an image or other kinds of file
-                if(preg_match("/\.(png)$/i", $file_info['name']))
+                if(preg_match("/\.(jpe?g)$/i", $file_info['name']))
                 {
                     $path = "./files/images/" . $module_info->seq . "/" . $inex . "/";
                     FileHandler::makeDir($path);
@@ -53,7 +53,7 @@ class settingsController{
                 }
                 else
                 {
-                    return setReturn(-1, "PNG 이미지만 업로드할 수 있습니다.");
+                    return setReturn(-1, "JPG 또는 JPEG 이미지만 업로드할 수 있습니다.");
                 }
 
                 //기존이미지 삭제

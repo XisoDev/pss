@@ -14,7 +14,7 @@ class prmModel{
         $data_url_ex = "";
         $is_two = "";
         if($model->design_ex_img){
-            $path = "./files/images/" . $product_srl . "/ex/" . $model->design_ex_img . ".png";
+            $path = "./files/images/" . $product_srl . "/ex/" . $model->design_ex_img . ".jpg";
             //외형이미지가 있으면
             if(file_exists($path)){
                 $style = "style='background-image:url(". $domain . $path . ");'";
@@ -23,7 +23,7 @@ class prmModel{
         }
 
         if($model->design_in_img){
-            $path = $path = "./files/images/" . $product_srl . "/in/" . $model->design_in_img . ".png";
+            $path = $path = "./files/images/" . $product_srl . "/in/" . $model->design_in_img . ".jpg";
             //내형이미지가 있는경우에만.
             if(file_exists($path)){
                 if(isset($style)){

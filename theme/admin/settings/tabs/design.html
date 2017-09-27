@@ -48,7 +48,7 @@ foreach($img_list as $key => $title){
         ?>
         <div class="small-box bg-gray model_image" style="padding-top:15px;">
             <?php
-            $file_url = "./files/images/{$output->oProduct->product_srl}/$key/$item.png";
+            $file_url = "./files/images/{$output->oProduct->product_srl}/$key/$item.jpg";
             if(file_exists($file_url)) {
                 ?>
                 <div class="thumbnail model_thumb" data-file-url="<?=$file_url?>" style="background-image:url('<?=$domain.$file_url?>');">
