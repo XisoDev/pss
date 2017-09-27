@@ -218,10 +218,10 @@ class settingsView {
                 unset($data);
             }
         }else if($_GET['tab'] == 'design'){
-            $ex_sql = sprintf("select `design_ex_img` from `product_sample` group by `design_ex_img`",$oProduct->table_id);
+            $ex_sql = sprintf("select `design_ex_img` from `product_%s` group by `design_ex_img`",$oProduct->table_id);
             $ex_list = sql_query_array($ex_sql);
 
-            $in_sql = sprintf("select `design_in_img` from `product_sample` group by `design_in_img`",$oProduct->table_id);
+            $in_sql = sprintf("select `design_in_img` from `product_%s` group by `design_in_img`",$oProduct->table_id);
             $in_list = sql_query_array($in_sql);
 
             $output->ex_list = array();
