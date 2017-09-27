@@ -39,7 +39,7 @@
                 </th>
                 <?php
                 foreach($output->data->models as $model){
-                    echo "<td><div class='thumbnail'></div></td>";
+                    echo "<td>" . $model->thumbnail . "</td>";
                 }
                 ?>
             </thead>

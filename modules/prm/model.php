@@ -6,6 +6,41 @@ class prmModel{
 
     }
 
+    function getModelThumb($model,$product_srl){
+        global $domain;
+
+        $class = "";
+        $data_url_in = "";
+        $data_url_ex = "";
+        $is_two = "";
+        if($model->design_ex_img){
+            $path = "./files/images/" . $product_srl . "/ex/" . $model->design_ex_img . ".png";
+            //외형이미지가 있으면
+            if(file_exists($path)){
+                $style = "style='background-image:url(". $domain . $path . ");'";
+                $data_url_ex = "data-out-url='" . $domain . $path . "'";
+            }
+        }
+
+        if($model->design_in_img){
+            $path = $path = "./files/images/" . $product_srl . "/in/" . $model->design_in_img . ".png";
+            //내형이미지가 있는경우에만.
+            if(file_exists($path)){
+                if(isset($style)){
+                    $class = " is_two";
+                    $is_two = "<i class=\"fa fa-clone\"></i>";
+                    $data_url_in = "data-over-url='" . $domain . $path . "'";
+                }else{
+                    $style = "style='background-image:url(". $domain . $path . ");'";
+                }
+            }
+        }
+
+        $html = "<div class='thumbnail{$class}' {$style} {$data_url_in} {$data_url_ex}>{$is_two}</div>";
+
+        return $html;
+    }
+
     function getModelHTML($model,$field_info){
         $use_fields = array();
         foreach($field_info as $field => $info){
@@ -48,6 +83,7 @@ class prmModel{
         $field_info = unserialize($field_info['field_info']);
 
         foreach($output->model_list as $key => $model){
+            $model->thumbnail = $this->getModelThumb($model,$args->product_srl);
             $model->infohtml = $this->getModelHTML($model,$field_info);
             $output->model_list[$key] = $model;
         }
@@ -182,6 +218,7 @@ class prmModel{
                     $row->models = sql_query_array($query)->data;
                     if(count($row->models)){
                         foreach($row->models as $key => $model){
+                            $model->thumbnail = $this->getModelThumb($model,$oPRM->product_srl);
                             $model->infohtml = $this->getModelHTML($model,$oPRM->field_info);
                             $row->models[$key] = $model;
                         }
@@ -316,6 +353,7 @@ class prmModel{
 
         if(count($oPRM->models)){
             foreach($oPRM->models as $key => $model){
+                $model->thumbnail = $this->getModelThumb($model,$oPRM->product_srl);
                 $model->infohtml = $this->getModelHTML($model,$oPRM->field_info);
                 $oPRM->models[$key] = $model;
             }

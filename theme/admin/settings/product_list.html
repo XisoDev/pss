@@ -95,6 +95,7 @@ include $module_info->theme_path . "_head.php";
                     <li <?=($_GET['tab'] == 'salefees') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=salefees" >SaleSubs</a></li>
                     <li <?=($_GET['tab'] == 'procfees') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=procfees" >ProcSubs</a></li>
                     <li <?=($_GET['tab'] == 'stepup') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=stepup" >StepUpLogic</a></li>
+                    <li <?=($_GET['tab'] == 'design') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=design" >Design</a></li>
                     <li <?=($_GET['tab'] == 'option') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=option" >Option</a></li>
                     <li <?=($_GET['tab'] == 'matrix') ? "class='active'" : false?>><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=matrix" >Matrix</a></li>
                     <li class="pull-right"><a href="<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=settingfield" class="text-muted" <?=($_GET['tab'] == 'settingfield') ? "style=color:red !important;" : false?>>
@@ -115,6 +116,8 @@ include $module_info->theme_path . "_head.php";
                                 case "procfees" : include $module_info->template_path . "tabs/procfees.html";
                                     break;
                                 case "settingfield" : include $module_info->template_path . "tabs/settingfield.html";
+                                    break;
+                                case "design" : include $module_info->template_path . "tabs/design.html";
                                     break;
                                 case "option" : include $module_info->template_path . "tabs/option.html";
                                     break;

@@ -1,0 +1,91 @@
+<style>
+    .model_image{
+        float:left;
+        width:180px;
+        margin-right:10px;
+        padding:15px;
+    }
+    .thumbnail{
+        width: 150px;
+        height: 80px;
+        background-size:contain; background-position:center; background-repeat:no-repeat;
+        cursor:pointer;
+        position:relative;
+    }
+    .thumbnail i{
+        display:none;
+        position:absolute;
+        left:50%;
+        top:50%;
+        -webkit-transform: translate(-50%,-50%);
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
+        color:#FFF;
+    }
+    .thumbnail:hover{
+        background-image:none !important;
+        background-color:rgba(0,0,0,.75);
+    }
+    .thumbnail:hover i{
+        display:block;
+    }
+</style>
+
+<h4>디자인 코드별 제품 이미지를 등록합니다.</h4>
+
+<form id="insertform" action="<?=$domain?>settings/procProductDesignUpload/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+<?php
+$img_list = array(
+        "ex" => "Exterior",
+        "in" => "Interior"
+);
+foreach($img_list as $key => $title){
+    echo "<h2>$title Images</h2>";
+    $list = $output->{$key . "_list"};
+    foreach($list as $item){
+        ?>
+        <div class="small-box bg-gray model_image" style="padding-top:15px;">
+            <?php
+            $file_url = "./files/images/{$output->oProduct->product_srl}/$key/$item.png";
+            if(file_exists($file_url)) {
+                ?>
+                <div class="thumbnail model_thumb" data-file-url="<?=$file_url?>" style="background-image:url('<?=$domain.$file_url?>');">
+                    <i class="fa fa-trash"></i>
+                </div>
+                <?php
+            }
+            ?>
+
+            <div class="form-group">
+                <label for="icon_<?=$key?>_<?=$item?>">iconFile</label>
+                <input class="form-control" type="file" id="icon_<?=$key?>_<?=$item?>" value="" name="<?=$key?>|@|<?=$item?>" />
+            </div>
+            <a href="#" class="small-box-footer"> CODE : <?=$item?> </a>
+        </div>
+        <?php
+    }
+    echo "<div class='clearfix'></div>";
+    echo "<button type='submit' class='btn bg-maroon pull-right'>저장</button>";
+    echo "<hr />";
+}
+
+?>
+    <div id="deleted_zone">
+
+    </div>
+</form>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function($){
+       $(".model_thumb").click(function(){
+           if(confirm("이 이미지를 삭제합니다. 이 작업은 되돌릴 수 없습니다.")){
+               var html = "<input type='hidden' name='deleted[]' value='" + $(this).attr('data-file-url') + "' />";
+               $("#deleted_zone").append(html);
+               $(this).remove();
+           }
+       })
+    });
+</script>

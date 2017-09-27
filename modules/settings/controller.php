@@ -3,6 +3,70 @@
 class settingsController{
     function init(){
     }
+//    디자인파일 저장
+    function procProductDesignUpload($args){
+        global $module_info;
+        if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
+
+
+        //삭제할 이미지를 삭제 (새로업로드 되었을 수 있으므로 먼저삭제해야함)
+        if(is_array($args->deleted)){
+            foreach($args->deleted as $val){
+                if(file_exists($val))
+                    unlink($val);
+            }
+        }
+
+        //제품이미지를 일단 먼저업로드 (기존아이콘 삭제하면서 바로 대체)
+        foreach($_FILES as $key => $file){
+            $key_arr = explode("|@|",$key);
+            $inex = $key_arr[0];
+            $code = $key_arr[1];
+
+            if(is_uploaded_file($file['tmp_name'])){
+                $file_info = $file;
+
+                // A workaround for Firefox upload bug
+                if(preg_match('/^=\?UTF-8\?B\?(.+)\?=$/i', $file_info['name'], $match))
+                {
+                    $file_info['name'] = base64_decode(strtr($match[1], ':', '/'));
+                }
+
+                // https://github.com/xpressengine/xe-core/issues/1713
+                $file_info['name'] = preg_replace('/\.(php|phtm|phar|html?|cgi|pl|exe|jsp|asp|inc)/i', '$0-x',$file_info['name']);
+                // $file_info['name'] = removeHackTag($file_info['name']);
+                $file_info['name'] = str_replace(array('<','>'),array('%3C','%3E'),$file_info['name']);
+
+                // Get random number generator
+                $random = new Password();
+
+                // Set upload path by checking if the attachement is an image or other kinds of file
+                if(preg_match("/\.(png)$/i", $file_info['name']))
+                {
+                    $path = "./files/images/" . $module_info->seq . "/" . $inex . "/";
+                    FileHandler::makeDir($path);
+
+                    $_file_ext = substr(strrchr($file_info['name'],'.'),1);
+                    $_file_name = $code;
+
+                    $filename = $_file_name. '.' .$_file_ext;
+                }
+                else
+                {
+                    return setReturn(-1, "PNG 이미지만 업로드할 수 있습니다.");
+                }
+
+                //기존이미지 삭제
+                if(file_exists($path . $filename))
+                    unlink($path . $filename);
+
+                //업로드
+                if(!@move_uploaded_file($file_info['tmp_name'], $path . $filename))
+                    return setReturn(-1,'아이콘 업로드에 실패했습니다.');
+            }
+        }
+        return setReturn(0, "저장되었습니다.");
+    }
 //옵션저장
     function procProductOptionUpdate($args){
         global $module_info;
@@ -138,15 +202,17 @@ class settingsController{
         global $module_info;
         if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
 
-        if(!isset($args->wrap)) return setReturn(-1,"등록할 디자인그룹을 추가 해 주세요.");
-
-        $design_groups = array();
-        foreach($args->wrap as $key => $val){
-            if(!is_array($design_groups[$val])) $design_groups[$val] = array();
-            $design_groups[$val][] = $args->group[$key];
+        $obj = new stdClass();
+        if(isset($args->wrap)){
+            $design_groups = array();
+            foreach($args->wrap as $key => $val){
+                if(!is_array($design_groups[$val])) $design_groups[$val] = array();
+                $design_groups[$val][] = $args->group[$key];
+            }
+        }else{
+            $obj->design_group = false;
         }
 
-        $obj = new stdClass();
         $obj->design_group = serialize($design_groups);
 
         $query = updateQueryString("product",$obj);

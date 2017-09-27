@@ -217,6 +217,22 @@ class settingsView {
                 }
                 unset($data);
             }
+        }else if($_GET['tab'] == 'design'){
+            $ex_sql = sprintf("select `design_ex_img` from `product_sample` group by `design_ex_img`",$oProduct->table_id);
+            $ex_list = sql_query_array($ex_sql);
+
+            $in_sql = sprintf("select `design_in_img` from `product_sample` group by `design_in_img`",$oProduct->table_id);
+            $in_list = sql_query_array($in_sql);
+
+            $output->ex_list = array();
+            foreach($ex_list->data as $item){
+                $output->ex_list[] = $item->design_ex_img;
+            }
+
+            $output->in_list = array();
+            foreach($in_list->data as $item){
+                $output->in_list[] = $item->design_in_img;
+            }
         }else if($_GET['tab'] == 'option'){
             //해당 product의 matrix중, model에 use된 field 리스트를 group by 해서 가져옴.
 

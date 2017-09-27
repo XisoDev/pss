@@ -3,20 +3,23 @@
     include $module_info->theme_path . "_head.php";
 
     $step = $_GET['step'] ? $_GET['step'] : 1;
-    $step_list = array(
-        "1" => "Design Identity",
-        "2" => "Select Models",
-        "3" => "Step-Up Logic",
-        "4" => "Profitability",
-        "5" => "PRM Result",
-        "6" => "Macom & Spec"
-    );
+    $step_list = array();
+
+    if($output->data->design_group){
+        $step_list[] = "Design Identity";
+    }
+        $step_list[] = "Select Models";
+        $step_list[] = "Step-Up Logic";
+        $step_list[] = "Profitability";
+        $step_list[] = "PRM Result";
+        $step_list[] = "Macom & Spec";
 ?>
 <?=loadHeader($output->data->title,$output->data->product_title . "/ created : " . zdate($output->data->regdate,"y.m.d H:i"))?>
 
 <ul class="bar_tab">
     <?php
         foreach($step_list as $key => $title){
+            $key = $key + 1;
             if($step == $key) $active = "class='active'";
             else $active = false;
 
@@ -27,7 +30,7 @@
     <!-- Main content -->
     <section class="content">
         <?php
-            switch($step_list[$step]){
+            switch($step_list[$step-1]){
                 case "Design Identity" :
                     include  $module_info->template_path . "steps/design.html";
                     break;
@@ -50,6 +53,14 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
+
+        $(".thumbnail.is_two").mouseover(function(){
+           $(this).attr('style','background-image:url(' + $(this).attr('data-over-url') + ')');
+        });
+
+        $(".thumbnail.is_two").mouseout(function(){
+           $(this).attr('style','background-image:url(' + $(this).attr('data-out-url') + ')');
+        });
     });
     function confirmTab(){
         return confirm('변경사항이 저장되지 않아 변경사항이 유실될 수 있습니다.\n계속할까요?')

@@ -116,7 +116,7 @@
                     $heights[$no] = $cur_top;
 
                     echo "<div class=\"model_item draggable \" style='top:{$cur_top}px' data-model-no='{$no}'>
-                            <div class=\"thumbnail\"></div>
+                            {$model->thumbnail}
                         <div class=\"info\">
                             {$model->infohtml}
                             <span class='rrp btn btn-xs btn-success'>{$output->data->currency_char} {$rrp}</span>
@@ -150,7 +150,7 @@
                         $model = (object)$model;
                         echo "<div class=\"model_item model_{$no}\" style='top:{$heights[$no]}px'>
                         <div class=\"info\">
-                            <div class=\"thumbnail\"></div>
+                            {$model->thumbnail}
                             {$model->infohtml}
                             <span class='rrp btn btn-xs btn-success'>{$output->data->currency_char} {$rrp}</span>
                         </div>

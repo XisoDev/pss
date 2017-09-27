@@ -127,7 +127,7 @@
                     foreach($output->data->models as $model){
                          echo "<div class=\"col-sm-4 model_item\">
                                 <input type=\"hidden\" class=\"model_cart\" name=\"model_cart[]\" value=\"{$model->no}\" />
-                                <div class=\"thumbnail\"></div>
+                                {$model->thumbnail}
                                 <div class=\"info\">
                                    {$model->infohtml}
                                     <p class=\"pull-right\">
@@ -201,7 +201,7 @@
 
         var html = '<div class="col-sm-4 model_item">' +
             '<input type="hidden" class="model_cart" name="model_cart[]" value="' + model.no + '" />' +
-            '<div class="thumbnail"></div>' +
+            model.thumbnail +
             '<div class="info">' +
             model.infohtml +
             '<p class="pull-right">' +
@@ -252,6 +252,7 @@
 
     function doSearch(){
         var params = {};
+        params["product_srl"] = '<?=$output->data->product_srl?>';
         params["table_id"] = '<?=$table_id?>';
         params["conditions"] = conditions;
 
@@ -264,7 +265,7 @@
                 models['no' + model.no] = model;
 
                 var html = '<div class="col-xs-12 model_item">' +
-                    '<div class="thumbnail"></div>' +
+                    model.thumbnail +
                     '<div class="info">' +
                     model.infohtml +
                     '<p class="btn_area">';
