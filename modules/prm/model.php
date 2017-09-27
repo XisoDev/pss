@@ -117,7 +117,7 @@ class prmModel{
         $query = "SELECT `circu`.`circu_srl`, `circu`.`circu_title`, `circu`.`circu_title_abb`, `subs`.`subs_srl`, `subs`.`subs_title`, `subs`.`region`, `subs`.`currency`";
         $query .= " FROM `circu_product` left join `subs` on `subs`.`subs_srl` = `circu_product`.`subs_srl`";
         $query .= " left join `circu` on `circu`.`circu_srl` = `circu_product`.`circu_srl`";
-        $query .= " where `circu_product` = ". $args->product_srl;
+        $query .= " where `circu_product`.`product_srl` = ". $args->product_srl;
         $query .= " order by `subs`.`subs_title` ASC, `circu`.`circu_title` ASC";
         return sql_query_array($query);
     }
