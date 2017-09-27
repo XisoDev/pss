@@ -79,7 +79,7 @@
 #fixedWidget #fxshow,
 #fixedWidget #fxhide{
     position:absolute;
-    right:140px;
+    right:150px;
     bottom:100%;
 }
 #fixedWidget #is_save{

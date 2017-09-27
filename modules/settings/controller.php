@@ -265,6 +265,31 @@ class settingsController{
         return setReturn(0,"성공적으로 반영되었습니다.");
     }
 
+//유형 삭제
+    function procProductTypeDelete($args){
+        global $module_info;
+        global $domain;
+
+        if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
+
+        $product_srl = $module_info->seq;
+
+        $oProduct = sql_fetch("select * from `product` where `product_srl` = " . $product_srl);
+
+        //제품테이블 삭제 (성공유무 무시)
+        sql_query("DROP TABLE product_" . $oProduct['table_id']);
+        sql_query("delete from `options` where `table_id` = '" . $oProduct['table_id'] . "'");
+
+        //product 삭제
+        sql_query("delete from `product` where `product_srl` = " . $product_srl);
+        sql_query("delete from `proc_fees` where `product_srl` = " . $product_srl);
+        sql_query("delete from `sale_fees` where `product_srl` = " . $product_srl);
+        sql_query("delete from `circu_product` where `product_srl` = " . $product_srl);
+        sql_query("delete from `prm` where `product_srl` = " . $product_srl);
+
+        return setReturn(0, "삭제되었습니다.", sprintf("%ssettings/dispProductTypeList" , $domain));
+    }
+//제품유형 수정
     function procProductTypeUpdate($args){
         global $module_info;
         global $domain;

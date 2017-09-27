@@ -4,9 +4,17 @@
     <div class="box-body no-padding">
         <div class="mailbox-controls">
             <div class="has-feedback">
+
                 <div class="form-group">
                     <label for="table_id">TableID</label>
+                    <div class="row">
+                    <div class="col-sm-8">
                     <input type="text" class="form-control" id="table_id" name="table_id" readonly="readonly" value="<?=$output->oProduct->table_id?>" />
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="btn btn-flat btn-danger" onclick="return deleteProductType('<?=$output->oProduct->table_id?>')"><i class="fa fa-trash"></i> DELETE</button>
+                    </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="product_title">Product Type</label>
@@ -97,3 +105,12 @@
         <!-- /.mail-box-messages -->
     </div>
 </form>
+
+<script type="text/javascript">
+    function deleteProductType(table_id){
+        if(prompt("이 작업은 되돌릴 수 없습니다.\n제품유형이 잘못생성된 경우에만 삭제하십시요.\n계속하려면 DELETE 를 입력하세요.") == "DELETE"){
+            document.location.href = '<?=$domain?>settings/procProductTypeDelete/<?=$output->oProduct->product_srl?>?table_id=' + table_id;
+        }
+        return false;
+    }
+</script>
