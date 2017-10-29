@@ -221,6 +221,34 @@ class settingsController{
 
         return setReturn(0,"디자인그룹이 재정렬 되었습니다.");
     }
+//  마컴물
+    function procProductUpdateMacom($args){
+        global $module_info;
+        if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
+
+        $obj = new stdClass();
+        if(isset($args->header)){
+            $macom_list = array();
+            foreach($args->header as $no => $header){
+                if(!is_array($macom_list[$header])) $macom_list[$header] = array();
+
+                array_push($macom_list[$header],array(
+                                    "header" => $header,
+                                    "title" => $args->title[$no],
+                                    "path" => $args->path[$no])
+                );
+            }
+        }else{
+            $obj->macom_list = false;
+        }
+        $obj->macom_list = serialize($macom_list);
+
+        $query = updateQueryString("product",$obj);
+        $query .= " where `product_srl` = " . $module_info->seq;
+        sql_query($query);
+
+        return setReturn(0,"마컴물이 재 정렬 되었습니다.");
+    }
 
 //유통관리
     function procProductCircuratorInsert($args){

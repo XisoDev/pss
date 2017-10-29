@@ -1,0 +1,7 @@
+
+* DB페이지 접속해서 lgeprm DB 선택 후 다음 SQL 실행
+(마컴물 리스트를 저장하기위한 필드 증설)
+
+
+ALTER TABLE `product`  ADD `macom_list` LONGTEXT NOT NULL AFTER `design_group`;
+

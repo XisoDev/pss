@@ -348,6 +348,7 @@ class prmModel{
         $oPRM->field_spec = unserialize($oProduct->field_spec);
         $oPRM->field_info = unserialize($oProduct->field_info);
         $oPRM->design_group = unserialize($oProduct->design_group);
+        $oPRM->macom_list = unserialize($oProduct->macom_list);
         $oPRM->product_title = $oProduct->product_title;
         $oPRM->dept_title = $oProduct->dept_title;
 

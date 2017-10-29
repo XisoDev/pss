@@ -145,6 +145,7 @@ class settingsView {
             $oProduct->field_spec = unserialize($oProduct->field_spec);
             $oProduct->field_info = unserialize($oProduct->field_info);
             $oProduct->design_group = unserialize($oProduct->design_group);
+            $oProduct->macom_list = unserialize($oProduct->macom_list);
             $output->oProduct = $oProduct;
         }
 
@@ -184,6 +185,8 @@ class settingsView {
                 unset($data);
             }
         }else if($_GET['tab'] == "designgroup"){
+
+        }else if($_GET['tab'] == 'macom'){
 
         }else if($_GET['tab'] == "procfees"){
             //get subslist

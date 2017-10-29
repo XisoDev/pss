@@ -1,0 +1,85 @@
+<!-- /.box-header -->
+<div class="box-body no-padding">
+    <div class="mailbox-controls">
+        <label for="macom_header">Header Group</label>
+        <div class="form-group">
+            <input type="text" class="form-control" id="macom_header" aria-describedby="header" />
+        </div>
+        <br />
+        <label for="macom_title">Data Title</label>
+        <div class="form-group">
+            <input type="text" class="form-control" id="macom_title" aria-describedby="title" />
+        </div>
+        <br />
+        <label for="macom_path">Download Path</label>
+        <div class="input-group">
+            <span class="input-group-addon">./macoms/<?=$output->oProduct->product_srl?>/</span>
+            <input type="text" class="form-control" id="macom_path" aria-describedby="Download Path">
+        </div>
+        <br />
+
+        <button class="btn btn-primary pull-right" onclick="addMacom()" type="button">ADD Macom</button>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="table-responsive mailbox-messages">
+        <form id="updateForm" action="<?=$domain?>settings/procProductUpdateMacom/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="prod_subs" value="<?=$_GET['prod_subs']?>" />
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Header Group</th>
+                    <th>Data Title</th>
+                    <th colspan="2">Download Path</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody id="design_group_table">
+                <?php
+                if(count($output->oProduct->macom_list)){
+                    foreach($output->oProduct->macom_list as $group){
+                        foreach($group as $header => $macom){
+                        echo "<tr>";
+                        echo "<td><input type='text' class='form-control' name='header[]' value='" . $macom['header'] . "' /></td>";
+                        echo "<td><input type='text' class='form-control' name='title[]' value='" . $macom['title'] . "' /></td>";
+                        echo "<td><span class='path'>./macoms/" . $output->oProduct->product_srl ."/</span></td>";
+                        echo "<td><input type='text' class='form-control' name='path[]' value='" . $macom['path'] . "' /></td>";
+                        echo "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeThis(this)'><i class='fa fa-trash'></i></button></td>";
+                        echo "</tr>";
+                        }
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+            <div class="mailbox-controls">
+                <!-- Check all button -->
+                <button type="submit" class="btn btn-primary btn-sm checkbox-toggle">
+                    <i class="fa fa-refresh"></i> update Macom List
+                </button>
+            </div>
+        </form>
+        <!-- /.table -->
+    </div>
+    <!-- /.mail-box-messages -->
+</div>
+<script type="text/javascript">
+    function removeThis(obj){
+        $(obj).parent().parent('tr').remove();
+    }
+    function addMacom(){
+        var header = $("#macom_header").val();
+        var title = $("#macom_title").val();
+        var path = $("#macom_path").val();
+
+        var html = "<tr>" +
+            "<td><input type='text' class='form-control' name='header[]' value='" + header + "' /></td>" +
+            "<td><input type='text' class='form-control' name='title[]' value='" + title + "' /></td>" +
+            "<td><span class='path'>./macoms/<?=$output->oProduct->product_srl?>/</span></td>" +
+            "<td><input type='text' class='form-control' name='path[]' value='" + path + "' /></td>" +
+            "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeThis(this)'><i class='fa fa-trash'></i></button></td>" +
+            "</tr>";
+
+        $("#design_group_table").append(html);
+    }
+</script>

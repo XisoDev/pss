@@ -69,3 +69,32 @@
         </table>
         </div>
     </div>
+
+
+<div class="box">
+    <div class="row" style="padding:15px;">
+    <?php
+    if(count($output->data->macom_list)){
+        foreach($output->data->macom_list as $header => $group){
+        ?>
+            <div class="col col-sm-6 col-md-4"style="padding:15px;">
+                <div class="box-header" style="padding:0 0 20px; border-bottom:1px solid #ad1947;">
+                    <i class="fa fa-download"></i>
+                    <h3 class="box-title"><?=$header?></h3>
+                </div>
+                <ul style="padding-top:20px;">
+                <?php
+                foreach($group as $header => $macom){
+                ?>
+                            <li style="border-bottom:1px dotted #ccc;"><a href="../../../macoms/<?=$output->data->product_srl?>/<?=$macom['path']?>"><?=$macom['title']?></a></li>
+                <?php
+                }
+                ?>
+                </ul>
+            </div>
+        <?php
+        }
+    }
+    ?>
+    </div>
+</div>
