@@ -146,6 +146,7 @@ class settingsView {
             $oProduct->field_info = unserialize($oProduct->field_info);
             $oProduct->design_group = unserialize($oProduct->design_group);
             $oProduct->macom_list = unserialize($oProduct->macom_list);
+            $oProduct->stepup_logic = unserialize($oProduct->stepup_logic);
             $output->oProduct = $oProduct;
         }
 

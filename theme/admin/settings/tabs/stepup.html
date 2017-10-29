@@ -1,0 +1,120 @@
+<!-- /.box-header -->
+<div class="box-body no-padding">
+    <div class="mailbox-controls">
+        <form id="updateForm" action="<?=$domain?>settings/procProductUploadStepup/<?=$output->oProduct->product_srl?>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="ori_stepup" value='<?=serialize($output->oProduct->stepup_logic)?>' />
+            <div class="form-group">
+                <label for="stepup_title">Stepup Logic Title</label>
+                <input type="text" class="form-control" name="stepup_title" id="stepup_title" aria-describedby="TitleHelp" placeholder="Stepup Title">
+                <small id="TitleHelp" class="form-text text-muted">사업부별로, 필요에 따라 지역단위 법인단위 국가단위 등으로 구분할 수 있습니다. 불필요한 경우 공용으로 처리하십시요.</small>
+            </div>
+            <div class="form-group">
+                <label for="stepup_description">Description</label>
+                <textarea class="form-control" name="stepup_description" id="stepup_description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="stepup_upload">Logic Upload (Only Image)</label>
+                <input type="file" class="form-control-file" name="stepup_upload" id="stepup_upload" />
+            </div>
+            <button class="btn btn-primary pull-right" type="submit">ADD Stepup Logic</button>
+
+            <div class="clearfix"></div>
+        </form>
+    </div>
+    <!-- /.mail-box-messages -->
+</div>
+
+<hr />
+
+<div class="box-body no-padding">
+    <div class="mailbox-controls">
+        <div class="has-feedback">
+            <select class="form-control"  onchange="document.location.href = '<?=$current_url_clear?>?dept_srl=<?=$_GET['dept_srl']?>&tab=stepup&logic_key=' + this.value">
+                <option value="">Select Stepup Logic</option>
+                <?php
+                foreach($output->oProduct->stepup_logic as $key => $logic){
+                    if(isset($_GET['logic_key']) && $_GET['logic_key'] == $key) $selected = "selected='selected'";
+                    else $selected = '';
+
+                    echo "<option value=\"{$key}\" $selected>{$logic->title}</option>";
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+    <?php
+    if(isset($_GET['logic_key']) && $output->oProduct->stepup_logic[$_GET['logic_key']]) {
+        ?>
+        <div class="table-responsive mailbox-messages">
+            <form id="updateform"
+                  action="<?= $domain ?>settings/procProductUpdateStepup/<?=$output->oProduct->product_srl?>"
+                  method="post" enctype="multipart/form-data">
+                <input type="hidden" name="is_delete" id="is_delete" value="N" />
+                <input type="hidden" name="ori_stepup" value='<?=serialize($output->oProduct->stepup_logic)?>' />
+                <input type="hidden" name="logic_key" value="<?=$_GET['logic_key'] ?>"/>
+                <input type="hidden" name="img_url" value="<?=$output->oProduct->stepup_logic[$_GET['logic_key']]->img_url?>"/>
+                <div class="row" style="padding:10px 15px;">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label for="stepup_title2">변경할 이미지 업로드</label>
+                            <input type="text" id="stepup_title2" name="stepup_title" class="form-control" value="<?=$output->oProduct->stepup_logic[$_GET['logic_key']]->title?>" />
+                        </div>
+                        <br />
+                    </div>
+                    <div class="col-xs-4">
+
+                        <div class="form-group">
+                            <label for="stepup_upload2">변경할 이미지 업로드</label>
+                            <input type="file" class="form-control-file" name="stepup_upload" id="stepup_upload2" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stepup_description2">설명글 수정.</label>
+                            <textarea name="stepup_description" id="stepup_description2" class="form-control" rows="20"><?=$output->oProduct->stepup_logic[$_GET['logic_key']]->description?></textarea>
+                        </div>
+                    </div>
+                    <div class="col-xs-8">
+                        <img src="../../../<?=$output->oProduct->stepup_logic[$_GET['logic_key']]->img_url?>" width="100%" />
+                    </div>
+                </div>
+
+                <div class="mailbox-controls">
+                    <button type="submit" onclick="jQuery('#is_delete').val('N');" class="btn btn-sm btn-success"><i class="fa fa-refresh"></i> Update Stepup
+                        Logic
+                    </button>
+                    <!-- Check all button -->
+                    <button type="submit" onclick="jQuery('#is_delete').val('Y');" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash"></i> delete Stepup Logic
+                    </button>
+                </div>
+            </form>
+            <!-- /.table -->
+        </div>
+        <?php
+    }
+    ?>
+    <!-- /.mail-box-messages -->
+</div>
+
+
+
+<script type="text/javascript">
+    function removeThis(obj){
+        $(obj).parent().parent('tr').remove();
+    }
+    function addMacom(){
+        var header = $("#macom_header").val();
+        var title = $("#macom_title").val();
+        var path = $("#macom_path").val();
+
+        var html = "<tr>" +
+            "<td><input type='text' class='form-control' name='header[]' value='" + header + "' /></td>" +
+            "<td><input type='text' class='form-control' name='title[]' value='" + title + "' /></td>" +
+            "<td><span class='path'>./macoms/<?=$output->oProduct->product_srl?>/</span></td>" +
+            "<td><input type='text' class='form-control' name='path[]' value='" + path + "' /></td>" +
+            "<td><button type='button' class='btn btn-xs btn-danger' onclick='removeThis(this)'><i class='fa fa-trash'></i></button></td>" +
+            "</tr>";
+
+        $("#design_group_table").append(html);
+    }
+</script>

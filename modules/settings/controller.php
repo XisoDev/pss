@@ -3,6 +3,144 @@
 class settingsController{
     function init(){
     }
+
+//    스탭업로직 변경/삭제
+    function procProductUpdateStepup($args){
+        global $module_info;
+        if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
+
+        $obj = new stdClass();
+        $stepup_logic = unserialize($args->ori_stepup);
+        if(!is_array($stepup_logic)) $stepup_logic = array();
+
+        if($args->is_delete == 'Y'){
+            unset($stepup_logic[$args->logic_key]);
+            unlink($args->img_url);
+        }else{
+            //db에등록할 데이터를 대체
+            $logic = new stdClass();
+
+            if(is_uploaded_file($_FILES['stepup_upload']['tmp_name'])){
+
+                $file_info = $_FILES['stepup_upload'];
+                // A workaround for Firefox upload bug
+                if(preg_match('/^=\?UTF-8\?B\?(.+)\?=$/i', $file_info['name'], $match))
+                {
+                    $file_info['name'] = base64_decode(strtr($match[1], ':', '/'));
+                }
+
+                // https://github.com/xpressengine/xe-core/issues/1713
+                $file_info['name'] = preg_replace('/\.(php|phtm|phar|html?|cgi|pl|exe|jsp|asp|inc)/i', '$0-x',$file_info['name']);
+                // $file_info['name'] = removeHackTag($file_info['name']);
+                $file_info['name'] = str_replace(array('<','>'),array('%3C','%3E'),$file_info['name']);
+
+                // Get random number generator
+                $random = new Password();
+
+                // Set upload path by checking if the attachement is an image or other kinds of file
+                if(preg_match("/\.(jpe?g|gif|png)$/i", $file_info['name']))
+                {
+                    $path = "./files/stepup_logic/" . $module_info->seq . "/";
+                    FileHandler::makeDir($path);
+
+                    $_file_ext = substr(strrchr($file_info['name'],'.'),1);
+                    $_file_name = $random->createSecureSalt(32, 'hex');
+
+                    $filename = $_file_name. '.' .$_file_ext;
+                }
+                else
+                {
+                    return setReturn(-1, "이미지 형식이 아닙니다.");
+                }
+
+                //업로드
+                if(!@move_uploaded_file($file_info['tmp_name'], $path . $filename))
+                    return setReturn(-1,'로직 이미지 업로드에 실패했습니다.');
+
+                //주소변경
+                unlink($args->img_url);
+                $logic->img_url = $path . $filename;
+            }else{
+                $logic->img_url = $args->img_url;
+            }
+
+            $logic->title = $args->stepup_title;
+            $logic->description = $args->stepup_description;
+
+            $stepup_logic[$args->logic_key] = $logic;
+        }
+        $obj->stepup_logic = serialize($stepup_logic);
+
+        $query = updateQueryString("product",$obj);
+        $query .= " where `product_srl` = " . $module_info->seq;
+        sql_query($query);
+
+        return setReturn(0,"성공적으로 처리하였습니다.");
+    }
+
+//    스탭업로직 저장
+    function procProductUploadStepup($args){
+        global $module_info;
+        if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
+
+        $obj = new stdClass();
+        $stepup_logic = unserialize($args->ori_stepup);
+        if(!is_array($stepup_logic)) $stepup_logic = array();
+
+        if(!$args->stepup_title) return setReturn(-1,"스탭업 로직의 제목을 입력하세요.");
+        if(!$args->stepup_description) return setReturn(-1,"스탭업 로직의 설명글을 입력하세요.");
+        if(!is_uploaded_file($_FILES['stepup_upload']['tmp_name'])) return setReturn(-1,"로직이미지가 업로드되지 않았습니다.");
+
+        $file_info = $_FILES['stepup_upload'];
+        // A workaround for Firefox upload bug
+        if(preg_match('/^=\?UTF-8\?B\?(.+)\?=$/i', $file_info['name'], $match))
+        {
+            $file_info['name'] = base64_decode(strtr($match[1], ':', '/'));
+        }
+
+        // https://github.com/xpressengine/xe-core/issues/1713
+        $file_info['name'] = preg_replace('/\.(php|phtm|phar|html?|cgi|pl|exe|jsp|asp|inc)/i', '$0-x',$file_info['name']);
+        // $file_info['name'] = removeHackTag($file_info['name']);
+        $file_info['name'] = str_replace(array('<','>'),array('%3C','%3E'),$file_info['name']);
+
+        // Get random number generator
+        $random = new Password();
+
+        // Set upload path by checking if the attachement is an image or other kinds of file
+        if(preg_match("/\.(jpe?g|gif|png)$/i", $file_info['name']))
+        {
+            $path = "./files/stepup_logic/" . $module_info->seq . "/";
+            FileHandler::makeDir($path);
+
+            $_file_ext = substr(strrchr($file_info['name'],'.'),1);
+            $_file_name = $random->createSecureSalt(32, 'hex');
+
+            $filename = $_file_name. '.' .$_file_ext;
+        }
+        else
+        {
+            return setReturn(-1, "이미지 형식이 아닙니다.");
+        }
+
+        //업로드
+        if(!@move_uploaded_file($file_info['tmp_name'], $path . $filename))
+            return setReturn(-1,'로직 이미지 업로드에 실패했습니다.');
+
+        //db에등록할 데이터를 대체 (기존아이콘이 있거나말거나 새로업로드된게 있으면 대체)
+        $logic = new stdClass();
+        $logic->img_url = $path . $filename;
+        $logic->title = $args->stepup_title;
+        $logic->description = $args->stepup_description;
+
+        $stepup_logic[time()] = $logic;
+        $obj->stepup_logic = serialize($stepup_logic);
+
+        $query = updateQueryString("product",$obj);
+        $query .= " where `product_srl` = " . $module_info->seq;
+        sql_query($query);
+
+        return setReturn(0,"스탭업 로직이 추가 되었습니다.");
+    }
 //    디자인파일 저장
     function procProductDesignUpload($args){
         global $module_info;

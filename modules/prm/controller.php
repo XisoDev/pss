@@ -39,6 +39,31 @@ class prmController{
         return setReturn(0, "created PRM", $domain . "prm/update/" . $obj->prm_srl);
     }
 
+    function procUpdateStepup($args){
+        if(!$args->logic_key) return setReturn(-1, "스탭업 로직이 선택되지 않았습니다.");
+
+        global $logged_info;
+        global $module_info;
+
+        //setPrm & Product Data
+        $oPrmModel = getModel('prm');
+        $output = new Object();
+        $output->data = $oPrmModel->getPrm($module_info->seq);
+
+        //check grant
+        if($logged_info->member_srl != $output->data->member_srl) return setReturn(-1,"권한이 없습니다.");
+
+        //선택된 그룹과 관련없는 모델들은 전부 제거해서 같이 수정해야함.
+
+        //update query
+        $obj = new stdClass();
+        $obj->stepup = $args->logic_key;
+        $query = updateQueryString("prm",$obj);
+        $query .= " where `prm_srl` = " . $output->data->prm_srl;
+        sql_query($query);
+
+        return setReturn(0, "success saved.");
+    }
     function procUpdateDesign($args)
     {
         if(!$args->design_id) return setReturn(-1, "디자인그룹이 선택되지 않았습니다.");

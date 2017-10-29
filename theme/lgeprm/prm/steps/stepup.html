@@ -1,0 +1,43 @@
+<?php
+    if(isset($_GET['logic_key'])){
+        $logic_key = $_GET['logic_key'];
+    }else if($output->data->stepup){
+        $logic_key = $output->data->stepup;
+    }
+?>
+
+<div style="padding-bottom: 200px;">
+    <div class="box box-success">
+        <div class="box-header">
+            <select class="form-control"  onchange="document.location.href = '<?=$current_url_clear?>?step=<?=$_GET['step']?>&logic_key=' + this.value">
+                <option value="">Select Stepup Logic</option>
+                <?php
+                foreach($output->data->stepup_logic as $key => $logic){
+                    if(isset($logic_key) && $logic_key == $key) $selected = "selected='selected'";
+                    else $selected = '';
+
+                    echo "<option value=\"{$key}\" $selected>{$logic->title}</option>";
+                }
+                ?>
+            </select>
+        </div>
+        <div class="box-body">
+        <div class="row">
+            <div class="col-xs-4">
+                <?=nl2br($output->data->stepup_logic[$logic_key]->description)?>
+            </div>
+            <div class="col-xs-8">
+                <img src="../../../<?=$output->data->stepup_logic[$logic_key]->img_url?>" width="100%" />
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<article id="fixedWidget">
+    <form method="post" action="<?=$domain?>prm/procUpdateStepup/<?=$module_info->seq?>">
+        <input type="hidden" name="success_return_url" value="<?=$current_url_clear?>?step=<?=$step+1?>" />
+        <input type="hidden" name="error_return_url" value="<?=$current_url_clear?>?step=<?=$step?>" />
+        <input type="hidden" name="logic_key" value="<?=$logic_key?>" />
+        <button type="submit" id="is_save" href="#" class="btn bg-maroon btn-flat"><i class="fa fa-save"></i> SAVE & Next Step </button>
+    </form>
+</article>

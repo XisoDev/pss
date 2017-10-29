@@ -308,7 +308,7 @@ class prmModel{
         }else{
             $oPRM->models = array();
         }
-        $oPRM->stepup = unserialize($oPRM->stepup);
+//        $oPRM->stepup = unserialize($oPRM->stepup);
         $oPRM->profit = unserialize($oPRM->profit);
         $oPRM->result = unserialize($oPRM->result);
         $profit_models = $oPRM->profit->models;
@@ -349,6 +349,7 @@ class prmModel{
         $oPRM->field_info = unserialize($oProduct->field_info);
         $oPRM->design_group = unserialize($oProduct->design_group);
         $oPRM->macom_list = unserialize($oProduct->macom_list);
+        $oPRM->stepup_logic = unserialize($oProduct->stepup_logic);
         $oPRM->product_title = $oProduct->product_title;
         $oPRM->dept_title = $oProduct->dept_title;
 
