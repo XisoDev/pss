@@ -34,8 +34,23 @@ class settingsView {
     function dispSubsCurrency(){
         global $module_info;
 
+        //all list
         $query = "select * from `currency`";
         $output = sql_query_array($query);
+
+        //used list
+        // subs group by cureency
+        $used_currency = "SELECT `currency`.* FROM  `subs` left join `currency` on `currency`.`code` = `subs`.`currency` group by `subs`.`currency`";
+        $used_output = sql_query_array($used_currency);
+
+        $output->used = $used_output;
+
+        // prod group by cureency
+        $prod_currency = "SELECT `currency`.* FROM  `proc_fees` left join `currency` on `currency`.`code` = `proc_fees`.`prod_currency` group by `proc_fees`.`prod_currency`";
+        $prod_output = sql_query_array($prod_currency);
+
+        $output->used = $used_output;
+        $output->prod = $prod_output;
 
         $module_info->template_file = "currency";
         return $output;

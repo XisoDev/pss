@@ -44,52 +44,73 @@ include $module_info->theme_path . "_head.php";
                 </form>
             </div>
         </div>
-        <div class="col-sm-8">
-        <!-- TABLE: LATEST ORDERS -->
-        <div class="box box-info">
-            <div class="box-header with-border">
-                <h3 class="box-title">Currency List</h3>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-                <div class="table-responsive">
-                    <table class="table no-margin">
-                        <thead>
-                        <tr>
-                            <th>통화코드</th>
-                            <th>표시기호</th>
-                            <th>설명</th>
-                            <th>to USD</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <?php
-                        foreach($output->data as $currency){
-                            echo "<tr>";
-                            echo "<td><a href='#' class=\"btn btn-xs btn-info btn-flat pull-right\" onclick='return false'>{$currency->code}</a></td>";
-                            echo "<td>{$currency->char}</td>";
-                            echo "<td>{$currency->title}</td>";
-                            echo "<td><input type='text' name='to_usd' value='{$currency->to_usd}' /></td>";
-                            echo "</td>";
-                            echo "</tr>";
+        <section class="col-sm-8">
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                    <li class="active"><a href="#used_list" data-toggle="tab">Used(Sale Subs)</a></li>
+                    <li><a href="#prod_list" data-toggle="tab">Used(Prod Subs)</a></li>
+                    <li><a href="#all_list" data-toggle="tab">ALL</a></li>
+                    <li class="pull-left header"><i class="fa fa-krw"></i> Currency List</li>
+                </ul>
+                <div class="tab-content no-padding">
+                    <?php
+                        $currency_list = array(
+                                "used_list" => $output->used->data,
+                                "prod_list" => $output->prod->data,
+                                "all_list" => $output->data
+                        );
+                        foreach($currency_list as $id => $data) {
+                            ?>
+                            <!-- Morris chart - Sales -->
+                            <div class="chart tab-pane<?php if($id == 'used_list') echo ' active'?>" id="<?=$id?>">
+                                <form id="insertform" action="<?= $domain ?>settings/procUpdateCurrency" method="post"
+                                      enctype="multipart/form-data">
+                                    <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <div class="table-responsive">
+                                            <table class="table no-margin">
+                                                <thead>
+                                                <tr>
+                                                    <th>통화코드</th>
+                                                    <th>표시기호</th>
+                                                    <th>설명</th>
+                                                    <th>to USD</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php
+                                                foreach ($data as $currency) {
+                                                    echo "<tr>";
+                                                    echo "<td><a href='#' class=\"btn btn-xs btn-info btn-flat pull-right\" onclick='return false'>{$currency->code}</a></td>";
+                                                    echo "<td>{$currency->char}</td>";
+                                                    echo "<td>{$currency->title}</td>";
+                                                    echo "<td><input type='text' name='to_usd[{$currency->code}]' value='{$currency->to_usd}' /></td>";
+                                                    echo "</td>";
+                                                    echo "</tr>";
+                                                }
+                                                ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!-- /.table-responsive -->
+                                    </div>
+                                    <!-- /.box-body -->
+                                    <div class="box-footer clearfix">
+                                        <button type="submit" class="btn btn-sm btn-info btn-flat pull-right"><i
+                                                    class="fa fa-refresh"></i> Update F/X Rate
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <?php
                         }
-                        ?>
-                        </tbody>
-                    </table>
+                    ?>
                 </div>
-                <!-- /.table-responsive -->
             </div>
-            <!-- /.box-body -->
-            <div class="box-footer clearfix">
-                <a href="#" class="btn btn-sm btn-info btn-flat pull-right"><i class="fa fa-refresh"></i> Update F/X Rate</a>
-            </div>
-            <!-- /.box-footer -->
-        </div>
-        <!-- /.box -->
-        </div>
-        <!-- /.col -->
-        </div>
+            <!-- /.nav-tabs-custom -->
+        </section>
     </div>
 </section>
 <?php

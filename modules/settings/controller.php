@@ -4,6 +4,26 @@ class settingsController{
     function init(){
     }
 
+//통화 업데이트
+    function procUpdateCurrency($args){
+        //start transition
+        sql_begin();
+        foreach($args->to_usd as $code => $to_usd){
+            $obj = new stdClass();
+            $obj->to_usd = $to_usd;
+            $query = updateQueryString("currency",$obj);
+            $query .= " where `code` = '" . $code ."'";
+
+            $result = sql_query($query);
+            if(!$result){
+                sql_rollback();
+                return setReturn(0,"환율 업데이트에 실패하였습니다.");
+            }
+        }
+        sql_commit();
+        return setReturn(0,"성공적으로 처리하였습니다.");
+    }
+
 //    스탭업로직 변경/삭제
     function procProductUpdateStepup($args){
         global $module_info;
