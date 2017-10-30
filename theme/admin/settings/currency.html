@@ -17,23 +17,24 @@ include $module_info->theme_path . "_head.php";
                 </div>
                 <!-- /.box-header -->
                 <!-- form start -->
-                <form role="form">
+
+                <form id="insertform" action="<?= $domain ?>settings/procInsertCurrency" method="post" enctype="multipart/form-data">
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="exampleInputEmail1">CODE</label>
-                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="ex) USD (not distinct)">
+                            <label for="code">CODE</label>
+                            <input type="text" class="form-control" id="code" name="code" placeholder="ex) USD (not distinct)">
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword1">CHAR</label>
-                            <input type="text" class="form-control" id="exampleInputPassword1" placeholder="ex) $">
+                            <label for="char">CHAR</label>
+                            <input type="text" class="form-control" id="char" name="char" placeholder="ex) $">
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputFile">Currency Title</label>
-                            <input type="text" class="form-control" id="exampleInputFile" placeholder="미국 달러">
+                            <label for="title">Currency Title</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="미국 달러">
                         </div>
                         <div class="form-group">
                             <label for="rate">to USD Rate</label>
-                            <input type="text" class="form-control" id="rate" placeholder="1.00">
+                            <input type="text" class="form-control" id="rate" name="rate" placeholder="1.00">
                         </div>
                     </div>
                     <!-- /.box-body -->
@@ -65,8 +66,7 @@ include $module_info->theme_path . "_head.php";
                             ?>
                             <!-- Morris chart - Sales -->
                             <div class="chart tab-pane<?php if($id == 'used_list') echo ' active'?>" id="<?=$id?>">
-                                <form id="insertform" action="<?= $domain ?>settings/procUpdateCurrency" method="post"
-                                      enctype="multipart/form-data">
+                                <form id="insertform" action="<?= $domain ?>settings/procUpdateCurrency" method="post" enctype="multipart/form-data">
                                     <!-- /.box-header -->
                                     <div class="box-body">
                                         <div class="table-responsive">
@@ -87,7 +87,6 @@ include $module_info->theme_path . "_head.php";
                                                     echo "<td>{$currency->char}</td>";
                                                     echo "<td>{$currency->title}</td>";
                                                     echo "<td><input type='text' name='to_usd[{$currency->code}]' value='{$currency->to_usd}' /></td>";
-                                                    echo "</td>";
                                                     echo "</tr>";
                                                 }
                                                 ?>

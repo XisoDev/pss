@@ -17,19 +17,25 @@ include $module_info->theme_path . "_head.php";
                 </div>
                 <!-- /.box-header -->
                 <!-- form start -->
-                <form role="form">
+                <form id="insertform" action="<?= $domain ?>settings/procInsertSubsdiary" method="post" enctype="multipart/form-data">
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="exampleInputEmail1">Title</label>
-                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="ex) LGEKR">
+                            <label for="subs_title">Title</label>
+                            <input type="text" class="form-control" id="subs_title" name="subs_title" placeholder="ex) LGEKR">
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword1">Region</label>
-                            <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Asia (group by)">
+                            <label for="region">Region</label>
+                            <input type="text" class="form-control" id="region" name="region" placeholder="Asia (group by)">
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputFile">CurrencyCode</label>
-                            <input type="text" class="form-control" id="exampleInputFile" placeholder="ex) USD">
+                            <label for="currency">CurrencyCode</label>
+                            <select name="currency" id="currency" class="form-control">
+                                <?php
+                                    foreach($output->currency_list as $currency){
+                                        echo "<option value='{$currency->code}'>[{$currency->code}] {$currency->title} ({$currency->char})</option>";
+                                    }
+                                ?>
+                            </select>
                         </div>
                     </div>
                     <!-- /.box-body -->
@@ -47,6 +53,7 @@ include $module_info->theme_path . "_head.php";
                     <h3 class="box-title">Currency List</h3>
                 </div>
                 <!-- /.box-header -->
+                <form id="insertform" action="<?= $domain ?>settings/procUpdateSubsdiary" method="post" enctype="multipart/form-data">
                 <div class="box-body">
                     <div class="table-responsive">
                         <table class="table no-margin">
@@ -56,7 +63,6 @@ include $module_info->theme_path . "_head.php";
                                 <th>법인명</th>
                                 <th>관할지역</th>
                                 <th>사용통화</th>
-                                <th>수정</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -65,11 +71,15 @@ include $module_info->theme_path . "_head.php";
                             foreach($output->data as $subsdiary){
                                 echo "<tr>";
                                 echo "<td>{$subsdiary->subs_srl}</td>";
-                                echo "<td><input type='text' name='to_usd' value='{$subsdiary->subs_title}' /></td>";
-                                echo "<td><input type='text' name='to_usd' value='{$subsdiary->region}' /></td>";
-                                echo "<td><input type='text' name='to_usd' value='{$subsdiary->currency}' /></td>";
-                                echo "<td><a href='#' class=\"btn btn-xs btn-info btn-flat pull-right\" onclick='return false'><i class='fa fa-refresh'></i></a></td>";
-                                echo "</td>";
+                                echo "<td><input type='text' name='subs_title[{$subsdiary->subs_srl}]' value='{$subsdiary->subs_title}' /></td>";
+                                echo "<td><input type='text' name='region[{$subsdiary->subs_srl}]' value='{$subsdiary->region}' /></td>";
+                                echo "<td><select name=\"currency[{$subsdiary->subs_srl}]\" id=\"currency\" class=\"form-control\">";
+                                foreach($output->currency_list as $currency){
+                                    if($subsdiary->currency == $currency->code) $selected = "selected='selected'";
+                                    else $selected = "";
+                                    echo "<option $selected value='{$currency->code}'>{$currency->code} - {$currency->title} ({$currency->char})</option>";
+                                }
+                                echo "</select></td>";
                                 echo "</tr>";
                             }
                             ?>
@@ -78,6 +88,13 @@ include $module_info->theme_path . "_head.php";
                     </div>
                     <!-- /.table-responsive -->
                 </div>
+                <!-- /.box-body -->
+                <div class="box-footer clearfix">
+                    <button type="submit" class="btn btn-sm btn-info btn-flat pull-right"><i
+                                class="fa fa-refresh"></i> Update Subsdiary
+                    </button>
+                </div>
+                </form>
             </div>
             <!-- /.box -->
         </div>

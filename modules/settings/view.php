@@ -86,8 +86,10 @@ class settingsView {
         global $module_info;
 
         //getSubsList
-        $query = "select * from `subs`";
+        $query = "select * from `subs` ORDER BY  `subs`.`region` ASC, `subs`.`subs_title` ASC";
         $output = sql_query_array($query);
+
+        $output->currency_list = sql_query_array("select * from `currency`")->data;
 
         $module_info->template_file = "subsdiary";
         return $output;
@@ -97,9 +99,14 @@ class settingsView {
     function dispSubsCircurator(){
         global $module_info;
 
+
         //getSubsList
-        $query = "select * from `circu`";
+        $query = "select * from `circu` left join `subs` on `subs`.`subs_srl` = `circu`.`subs_srl`";
         $output = sql_query_array($query);
+
+        //getSubsList
+        $query = "select * from `subs` ORDER BY  `subs`.`region` ASC, `subs`.`subs_title` ASC";
+        $output->subs = sql_query_array($query);
 
         $module_info->template_file = "circurator";
         return $output;

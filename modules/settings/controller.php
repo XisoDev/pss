@@ -4,6 +4,116 @@ class settingsController{
     function init(){
     }
 
+//    법인수정
+    function procUpdateSubsdiary($args){
+        //start transition
+        sql_begin();
+        foreach($args->subs_title as $subs_srl => $subs_title){
+            $obj = new stdClass();
+            $obj->subs_title = $args->subs_title[$subs_srl];
+            $obj->region = $args->region[$subs_srl];
+            $obj->currency = $args->currency[$subs_srl];
+
+            $query = updateQueryString("subs",$obj);
+            $query .= " where `subs_srl` = ". $subs_srl;
+
+            $result = sql_query($query);
+            if(!$result){
+                sql_rollback();
+                return setReturn(0,"업데이트에 실패하였습니다.");
+            }
+        }
+        sql_commit();
+        return setReturn(0,"성공적으로 처리하였습니다.");
+    }
+
+//    법인생성
+    function procInsertSubsdiary($args){
+        $obj = new stdClass();
+        $obj->subs_srl = getNextSequence();
+        $obj->subs_title = $args->subs_title;
+        $obj->region = $args->region;
+        $obj->currency = $args->currency;
+        $obj->regdate = date("YmdHis");
+        $obj->list_order = $obj->circu_srl * -1;
+
+        $output = insertQuery("subs",$obj);
+        if($output->result){
+            return setReturn(0, "등록성공");
+        }else{
+            return setReturn(-1, "등록 실패");
+        }
+    }
+//    유통수정
+    function procUpdateCircurator($args){
+        //start transition
+        sql_begin();
+        foreach($args->circu_title as $circu_srl => $circu_title){
+            $obj = new stdClass();
+            $obj->circu_title = $args->circu_title[$circu_srl];
+            $obj->circu_title_abb = $args->circu_title_abb[$circu_srl];
+
+            $query = updateQueryString("circu",$obj);
+            $query .= " where `circu_srl` = ". $circu_srl;
+
+            $result = sql_query($query);
+            if(!$result){
+                sql_rollback();
+                return setReturn(0,"업데이트에 실패하였습니다.");
+            }
+        }
+        sql_commit();
+        return setReturn(0,"성공적으로 처리하였습니다.");
+    }
+
+//    유통생성
+    function procInsertCircurator($args){
+        if(!isset($args->subs_srl)) return setReturn(-1,"소속 법인을 선택하십시요.");
+        $obj = new stdClass();
+        $obj->circu_srl = getNextSequence();
+        $obj->subs_srl = $args->subs_srl;
+        $obj->circu_title = $args->circu_title;
+        $obj->circu_title_abb = $args->circu_title_abb;
+        $obj->regdate = date("YmdHis");
+        $obj->list_order = $obj->circu_srl * -1;
+
+        $output = insertQuery("circu",$obj);
+        if($output->result){
+            return setReturn(0, "등록성공");
+        }else{
+            return setReturn(-1, "등록 실패");
+        }
+    }
+
+//통화 생성
+    function procInsertCurrency($args){
+        if(!isset($args->code)) return setReturn(-1,"통화 코드가 누락되었습니다.");
+        $args->code = strtoupper($args->code);
+
+        $sql = "select * from `currency` where `code` = '" . $args->code . "'";
+        $currency = sql_fetch($sql);
+        if($currency['title']){
+            return setReturn(-1, sprintf("등록하신 코드 %s는 이미 \"%s\" 으로 등록되어 있습니다.",$currency['code'],$currency['title']));
+        }
+
+        if(!isset($args->title)) return setReturn(-1,"통화명이 누락되었습니다.");
+        if(!isset($args->char)) return setReturn(-1,"통화 설명이 누락되었습니다.");
+        if(!isset($args->rate)) $args->rate = "1.0";
+
+        $obj = new stdClass();
+        $obj->code = $args->code;
+        $obj->title = $args->title;
+        $obj->char = $args->char;
+        $obj->to_usd = $args->rate;
+
+        $output = insertQuery("currency",$obj);
+        if($output->result){
+            return setReturn(0, "등록성공");
+        }else{
+            return setReturn(-1, "등록 실패");
+        }
+    }
+
 //통화 업데이트
     function procUpdateCurrency($args){
         //start transition
