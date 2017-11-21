@@ -934,6 +934,7 @@ class settingsController{
 
                 $output = sql_query($table_sql);
                 if(!$output){
+                    writeLog($table_sql,"create_table");
                     sql_rollback($link);
                     return setReturn(-1,"매트릭스 생성에 실패했습니다.<br />" . mysqli_errno($link) . " : " .  mysqli_error($link));
                 }

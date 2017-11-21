@@ -1,6 +1,14 @@
 <?php
 
 if (!defined('_XISO_')) exit;
+function writeLog($log,$file){
+    $log_txt = $log;
+    $log_dir = "./files/logs/";
+    FileHandler::makeDir($log_dir);
+    $log_file = fopen($log_dir. $file . time() . ".txt", "a");
+    fwrite($log_file, $log_txt."\r\n");
+    fclose($log_file);
+}
 
 function setReturn($error,$message,$return_url = false){
     $_SESSION['_XISO_ERROR_'] = $error;
