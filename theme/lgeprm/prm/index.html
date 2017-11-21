@@ -1,6 +1,14 @@
 <?php
 include $module_info->theme_path . "_head.php";
 ?>
+<style>
+    .table th{
+        text-align:center;
+        font-size:12px;
+        background:#eee;
+        border-left:1px solid #fff;
+    }
+</style>
 <?=loadHeader("PRM LIST","view my prm list")?>
     <!-- Main content -->
     <section class="content">
@@ -10,34 +18,67 @@ include $module_info->theme_path . "_head.php";
             </div>
             <div class="box-body">
             <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label for="search_dept">Dept</label>
-                    <select name="search_dept" id="search_dept" class="form-control">
-                        <option value="">ALL DEPT</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="search_product">Product Type</label>
-                    <select name="search_product" id="search_product" class="form-control">
-                        <option value="">ALL Product Type</option>
-                    </select>
-                </div>
+                <form id="search_form" action="<?=$module_url?>" method="get">
+                    <div class="col-md-3 col-sm-4 col-xs-6">
+                        <div class="form-group">
+                            <label for="search_dept">Dept</label>
+                            <select name="search_dept" id="search_dept" class="form-control" onchange="$('#search_product').val(''); $('#search_subs').val(''); $('#search_form').submit()">
+                                <option value="">ALL DEPT</option>
+                                <?php
+                                    foreach($output->search_conditions->dept as $dept){
+                                        if($_GET['search_dept'] == $dept->dept_srl) $selected = "selected";
+                                        else $selected = false;
+
+                                        echo "<option $selected value='{$dept->dept_srl}'>{$dept->dept_title}</option>";
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-6">
+                        <div class="form-group">
+                            <label for="search_product">Product Type</label>
+                            <select name="search_product" id="search_product" class="form-control" onchange="$('#search_subs').val(''); $('#search_form').submit()">
+                                <option value="">ALL Product Type</option>
+                                <?php
+                                foreach($output->search_conditions->product_type as $product){
+                                    if($_GET['search_product'] == $product->product_srl) $selected = "selected";
+                                    else $selected = false;
+
+                                    echo "<option $selected value='{$product->product_srl}'>{$product->product_title}</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-sm-4 col-xs-6">
+                        <div class="form-group">
+                            <label for="search_subs">Subsidiary</label>
+                            <select name="search_subs" id="search_subs" class="form-control" onchange="$('#search_form').submit()">
+                                <option value="">ALL Subsidiary</option>
+                                <?php
+                                foreach($output->search_conditions->subs as $subs){
+                                    if($_GET['search_subs'] == $subs->subs_srl) $selected = "selected";
+                                    else $selected = false;
+
+                                    echo "<option $selected value='{$subs->subs_srl}'>{$subs->subs_title}</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12 col-xs-6">
+                        <div class="form-group">
+                            <label for="search_keyword">Keyword</label>
+                            <input type="text" name="search_keyword" id="search_keyword" class="form-control" placeholder="Enter Keyword" value="<?=$_GET['search_keyword']?>" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                    <button type="submit" class="btn b btn-block bg-maroon btn-flat"><i class="fa fa-search"></i> SEARCH</button>
+                    </div>
+                </form>
             </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label for="search_subs">Subsidiary</label>
-                    <select name="search_subs" id="search_subs" class="form-control">
-                        <option value="">ALL Subsidiary</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="search_keyword">Keyword</label>
-                    <input type="text" name="search_keyword" id="search_keyword" class="form-control" placeholder="Enter Keyword" />
-                </div>
-            </div>
-            </div>
-                <button type="submit" class="btn b btn-block bg-maroon btn-flat"><i class="fa fa-search"></i> SEARCH</button>
             </div>
         </div>
 
@@ -59,7 +100,7 @@ include $module_info->theme_path . "_head.php";
                             <th>Title</th>
                             <th>Created</th>
                             <th>Status</th>
-                            <th>Function</th>
+                            <th colspan="3">Function</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -67,14 +108,14 @@ include $module_info->theme_path . "_head.php";
                         foreach($output->data as $no => $prm){
                         ?>
                             <tr>
-                                <td><?=$prm->prm_srl?></td>
-                                <td><?=$prm->dept_title?></td>
-                                <td><?=$prm->product_title?></td>
-                                <td><?=$prm->subs_title?></td>
+                                <td class="text-center"><?=$prm->prm_srl?></td>
+                                <td class="text-center"><?=$prm->dept_title?></td>
+                                <td class="text-center"><?=$prm->product_title?></td>
+                                <td class="text-center"><?=$prm->subs_title?></td>
                                 <td><?=$prm->circu_title?></td>
                                 <td><a href="<?=$module_url?>update/<?=$prm->prm_srl?>"><?=$prm->title?></a></td>
-                                <td><?=getTimeGap($prm->regdate,"m.d H:i")?></td>
-                                <td>
+                                <td class="text-center"><?=getTimeGap($prm->regdate,"m.d H:i")?></td>
+                                <td class="text-center">
                                     <?php
                                         if($prm->is_public == "Y"){
                                             echo "<a href='#' class='btn btn-xs btn-success'><i class='fa fa-eye'></i> Public</a>";
@@ -83,9 +124,32 @@ include $module_info->theme_path . "_head.php";
                                         }
                                     ?>
                                 </td>
-                                <td>
-                                    <a href="<?=$module_url?>update/<?=$prm->prm_srl?>" class="btn btn-xs btn-info">
-                                        <i class="fa fa-refresh"></i> Update
+                                    <?php
+                                        $colspan = 3;
+                                        //public
+                                        if($prm->permission["function"]["public"] == "Y" && $prm->is_public != "Y"){
+                                            echo "<td class=\"text-center\"><a href=\"".$module_url. "procPublicPrm/" . $prm->prm_srl . "\" class=\"btn btn-xs btn-success\">
+                                                        <i class=\"fa fa-cloud-upload\"></i> do Public
+                                                    </a></td>";
+                                            $colspan = $colspan - 1;
+                                        }else if($prm->permission["function"]["public"] == "Y"){
+                                            echo "<td class=\"text-center\"><a href=\"".$module_url. "procUnPublicPrm/" . $prm->prm_srl . "\" class=\"btn btn-xs btn-warning\">
+                                                        <i class=\"fa fa-cloud-download\"></i> do Private
+                                                    </a></td>";
+                                            $colspan = $colspan - 1;
+                                        }
+                                        echo "&nbsp;";
+                                        //send to copy
+                                        if($prm->permission["function"]["tocopy"] == "Y"){
+                                            echo "<td class=\"text-center\"><a href=\"#\" class=\"btn btn-xs btn-info\">
+                                                        <i class=\"fa fa-send\"></i> toCopy
+                                                    </a></td>";
+                                            $colspan = $colspan - 1;
+                                        }
+                                    ?>
+                                <td class="text-center" colspan="<?=$colspan?>">
+                                    <a href="<?=$module_url?>update/<?=$prm->prm_srl?>" class="btn btn-xs btn-default">
+                                        <i class="fa fa-wrench"></i> Modify
                                     </a>
                                 </td>
                             </tr>

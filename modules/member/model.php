@@ -6,6 +6,12 @@ class memberModel{
 
     }
 
+    function getPermission($type_srl){
+        $row = sql_fetch("select * from `member_type` where `type_srl` = '{$type_srl}'");
+        $row['permission'] = unserialize($row['permission']);
+        return (object)$row;
+    }
+
     function getLoggedInfo(){
         if(isset($_SESSION['logged_info'])){
             if($_SESSION['logged_info']->member_srl < 1){

@@ -3,18 +3,7 @@
     include $module_info->theme_path . "_head.php";
 
     $step = $_GET['step'] ? $_GET['step'] : 1;
-    $step_list = array();
-
-    if($output->data->design_group){
-        $step_list[] = "Design Identity";
-    }
-        $step_list[] = "Select Models";
-    if(count($output->data->stepup_logic)){
-        $step_list[] = "Step-Up Logic";
-    }
-        $step_list[] = "Profitability";
-        $step_list[] = "PRM Result";
-        $step_list[] = "Macom & Spec";
+    $step_list = $output->step_list;
 ?>
 <?=loadHeader($output->data->title,$output->data->product_title . "/ created : " . zdate($output->data->regdate,"y.m.d H:i"))?>
 

@@ -139,14 +139,26 @@ class prmModel{
 
     //사업부가 가지고있는 제품유형을 먼저 선택
     function getProductListByDept($args){
+        global $logged_info;
         if(!$args->dept_srl) return new Object(-1, '사업부가 선택되지 않았습니다.');
 
         $query = "select * from `product` where `dept_srl` = " . $args->dept_srl;
-        return sql_query_array($query);
+
+        //권한으로 필터
+        $temp_products = sql_query_array($query);
+        $products = new Object();
+        $products->data = array();
+        foreach($temp_products->data as $key => $val){
+            if($logged_info->permissions[$val->product_srl] > 0){
+                $products->data[] = $val;
+            }
+        }
+        return $products;
     }
 
     //제품유형으로 가지고있는 법인과 유통정보를 뽑아옴
     function getSubsCorpByProduct($args){
+        global $logged_info;
         if(!$args->product_srl) return new Object(-1, '제품유형이 선택되지 않았습니다.');
 
         $query = "SELECT `circu`.`circu_srl`, `circu`.`circu_title`, `circu`.`circu_title_abb`, `subs`.`subs_srl`, `subs`.`subs_title`, `subs`.`region`, `subs`.`currency`";
@@ -154,7 +166,17 @@ class prmModel{
         $query .= " left join `circu` on `circu`.`circu_srl` = `circu_product`.`circu_srl`";
         $query .= " where `circu_product`.`product_srl` = ". $args->product_srl;
         $query .= " order by `subs`.`subs_title` ASC, `circu`.`circu_title` ASC";
-        return sql_query_array($query);
+
+        //권한으로 필터
+        $temp_subs = sql_query_array($query);
+        $subs = new Object();
+        $subs->data = array();
+        foreach($temp_subs->data as $key => $val){
+            if(in_array($val->circu_srl."@".$val->subs_srl,$logged_info->circu_srls)){
+                $subs->data[] = $val;
+            }
+        }
+        return $subs;
     }
 
     //result용 객체 생성
