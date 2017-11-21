@@ -34,6 +34,14 @@ class memberModel{
             $member_info->member_srl = 0;
         }
 
+        $member_info->permissions = unserialize($member_info->permissions);
+        if(!is_array($member_info->permissions)){
+            $member_info->permissions = array();
+        }
+        $member_info->circu_srls = unserialize($member_info->circu_srls);
+        if(!is_array($member_info->circu_srls)){
+            $member_info->circu_srls = array();
+        }
         $output->data = $member_info;
         return $output;
     }

@@ -4,6 +4,82 @@ class settingsController{
     function init(){
     }
 
+    function procMemberInsert($args){
+        //check fields
+        if(!$args->user_id) return setReturn(-1, "유저 아이디가 누락되었습니다.");
+        if(!$args->password && !$args->member_srl) return setReturn(-1, "패스워드는 반드시 입력해야합니다.");
+
+        //member first
+        $obj = new stdClass();
+        $obj->user_id = $args->user_id;
+        $obj->emp_no = $args->emp_no;
+        $obj->user_name = $args->user_name;
+        $obj->dept = $args->dept;
+        $obj->rank = $args->rank;
+        $obj->is_denied = $args->is_denied;
+        $obj->is_admin = $args->is_admin;
+        $obj->permissions = serialize($args->permissions);
+        $obj->circu_srls = serialize($args->circu_srls);
+
+        if($args->member_srl){
+            if($args->password){
+                $obj->password = sha1($args->password);
+            }
+            $query = updateQueryString("member",$obj);
+            $query .= " where `member_srl` = ". $args->member_srl;
+
+            $result = sql_query($query);
+            if(!$result){
+                return setReturn(0,"업데이트에 실패하였습니다.");
+            }else {
+                return setReturn(0, "수정성공");
+            }
+        }else{
+            $obj->password = sha1($args->password);
+            $obj->regdate = date("YmdHis");
+            $obj->member_srl = getNextSequence();
+            $output = insertQuery("member",$obj);
+            if($output->result){
+                return setReturn(0, "등록성공");
+            }else{
+                return setReturn(-1, "등록 실패");
+            }
+        }
+    }
+
+    function procInsertPermission($args){
+        $is_update = "N";
+        $obj = new stdClass();
+        if($args->type_srl){
+            $obj->type_srl = $args->type_srl;
+            $is_update = "Y";
+        }else{
+            $obj->type_srl = getNextSequence();
+        }
+        $obj->product_srl = $args->product_srl;
+        $obj->type_title = $args->type_title;
+        $obj->permission = serialize($args->permission);
+
+        if($is_update == "Y"){
+            $query = updateQueryString("member_type",$obj);
+            $query .= " where `type_srl` = ". $obj->type_srl;
+
+            $result = sql_query($query);
+            if(!$result){
+                return setReturn(0,"업데이트에 실패하였습니다.");
+            }else{
+                return setReturn(0, "수정성공");
+            }
+        }else{
+            $output = insertQuery("member_type",$obj);
+            if($output->result){
+                return setReturn(0, "등록성공");
+            }else{
+                return setReturn(-1, "등록 실패");
+            }
+        }
+    }
+
 //    법인수정
     function procUpdateSubsdiary($args){
         //start transition

@@ -9,7 +9,9 @@
         $step_list[] = "Design Identity";
     }
         $step_list[] = "Select Models";
+    if(count($output->data->stepup_logic)){
         $step_list[] = "Step-Up Logic";
+    }
         $step_list[] = "Profitability";
         $step_list[] = "PRM Result";
         $step_list[] = "Macom & Spec";

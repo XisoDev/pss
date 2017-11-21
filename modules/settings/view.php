@@ -74,11 +74,97 @@ class settingsView {
     function dispMemberCreate($args){
         global $module_info;
 
-        //getMemberInfo
-        $oMemberModel = getModel('member');
-        $output = $oMemberModel->getMemberInfoByMemberSrl($module_info->seq);
+        $output = new stdClass();
+        $output->oMember = new stdClass();
+
+        if($module_info->seq){
+            $output->title_message = "Update Member Info";
+            $output->button_message = "Update Apply";
+            //getMemberInfo
+            $oMemberModel = getModel('member');
+            $output->oMember = $oMemberModel->getMemberInfoByMemberSrl($module_info->seq)->data;
+        }
+
+        if(!$output->oMember->member_srl){
+            $output->title_message = "Create New Member";
+            $output->button_message = "Sign Up";
+        }
+        //circu list
+        $query = "select * from `circu` left join `subs` on `subs`.`subs_srl` = `circu`.`subs_srl` order by `circu`.`subs_srl` ASC";
+        $temp_circu_list = sql_query_array($query)->data;
+        $output->circu_list = array();
+        foreach($temp_circu_list as $circu_info){
+            $output->circu_list[$circu_info->circu_srl . "@" . $circu_info->subs_srl] = $circu_info;
+        }
+
+        //사업부별 제품유형 get
+        $sql = "SELECT * FROM  `dept` ";
+        $temp = sql_query_array($sql)->data;
+        $output->dept_list = array();
+
+        $temp3 = new stdClass();
+        $temp3->type_srl = false;
+        $temp3->type_title = "Not Permitted";
+        foreach($temp as $dept){
+            $output->dept_list[$dept->dept_srl] = $dept;
+            $temp2 = sql_query_array("SELECT * FROM `product` where `dept_srl` = {$dept->dept_srl}")->data;
+            if(!count($temp2)) continue;
+            foreach($temp2 as $product){
+                $product->permissions = sql_query_array("SELECT * FROM `member_type` where `product_srl` = {$product->product_srl}")->data;
+                array_unshift($product->permissions, $temp3);
+
+                $output->dept_list[$dept->dept_srl]->product_list[$product->product_srl] = $product;
+            }
+        }
+        unset($temp,$temp2,$temp3);
 
         $module_info->template_file = "member_insert";
+        return $output;
+    }
+//회원 권한설정
+    function dispMemberPermission($args){
+        global $module_info;
+        $output = new stdClass();
+
+        //product_type list
+        $query = "select `product`.*, `dept`.`dept_title` from `product` left join `dept` on `dept`.`dept_srl` = `product`.`dept_srl` order by `product`.`dept_srl` ASC";
+        $productObj = sql_query_array($query);
+        $output->product = $productObj->data;
+        
+        //permission list
+        $permissions = new stdClass();
+        $permissions->prm = array();
+        $permissions->prm["design_group"] = "디자인 그룹선택";
+        $permissions->prm["model"] = "모델 선정";
+        $permissions->prm["stepup"] = "스탭업로직 적용";
+        $permissions->prm["profit"] = "수익성 분석";
+        $permissions->prm["result"] = "동일법인 내 유통분석";
+        $permissions->prm["spec"] = "스펙 및 마컴물 열람";
+
+        $permissions->function = array();
+        $permissions->function["tocopy"] = "생성된 PRM 복사하여 공유";
+        $permissions->function["public"] = "생성된 PRM을 대표 PRM으로 출판";
+        $output->permissions = $permissions;
+
+        //type list
+        $output->type_list = sql_query_array("SELECT `member_type`.*, `product`.`product_title` FROM `member_type` left join `product` on `member_type`.`product_srl` = `product`.`product_srl` order by `member_type`.`product_srl`")->data;
+
+        //set UpdateInfo
+        if($module_info->seq){
+            //setMessage
+            $output->oType = sql_fetch("select * from `member_type` where `type_srl` = {$module_info->seq}");
+            $output->oType['permission'] = unserialize($output->oType['permission']);
+            $output->title_message = "update Permission";
+            $output->button_message = "Update";
+        }else{
+            $output->oType = array();
+            //setMessage
+            $output->title_message = "Create New Permission";
+            $output->button_message = "Create";
+        }
+
+
+        $module_info->template_file = "member_permission";
         return $output;
     }
 //법인

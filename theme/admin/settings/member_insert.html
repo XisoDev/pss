@@ -5,79 +5,176 @@
 
 <section class="content">
 
-    <!-- TABLE: LATEST ORDERS -->
+    <!-- Horizontal Form -->
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Member Lists</h3>
-
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-xs btn-danger btn-flat pull-right toggle_modify" title="Toggle ModifyMode" onclick="toggleModify('delete');"><i class="fa fa-trash"></i></button>
-                <button type="button" class="btn btn-xs btn-info btn-flat pull-right toggle_delete" title="Toggle DeleteMode" onclick="toggleModify('modify');" style="display:none;"><i class="fa fa-wrench"></i></button>
-            </div>
+            <h3 class="box-title"><?=$output->title_message?></h3>
         </div>
         <!-- /.box-header -->
-        <div class="box-body">
-            <div class="table-responsive">
-                <table class="table no-margin">
-                    <thead>
-                    <tr>
-                        <th>emp_no</th>
-                        <th>user ID</th>
-                        <th>user NAME</th>
-                        <th>Dept</th>
-                        <th>Grade</th>
-                        <th>Type</th>
-                        <th>Auth</th>
-                        <th>Create date</th>
-                        <th>Function</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+        <!-- form start -->
+        <form class="form-horizontal" id="insertForm" action="<?=$domain?>settings/procMemberInsert" method="post" enctype="multipart/form-data">
+            <?php if($output->oMember->member_srl) echo "<input type=\"hidden\" name=\"member_srl\" value=\"{$output->oMember->member_srl}\" />"; ?>
+            <div class="box-body">
+                <h5>Default User Info</h5>
+                <div class="form-group">
+                   <label for="user_id" class="col-sm-2 control-label">UserID</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="user_id" name="user_id" value="<?=$output->oMember->user_id?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                   <label for="password" class="col-sm-2 control-label">Password <?php if($output->oMember->member_srl) echo 'Change'; ?></label>
+
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="password" name="password" value="" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                   <label for="emp_no" class="col-sm-2 control-label">Employee No</label>
+
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="emp_no" name="emp_no" value="<?=$output->oMember->emp_no?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                   <label for="user_name" class="col-sm-2 control-label">User NAME</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="user_name" name="user_name" value="<?=$output->oMember->user_name?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                   <label for="dept" class="col-sm-2 control-label">Dept</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="dept" name="dept" value="<?=$output->oMember->dept?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                   <label for="rank" class="col-sm-2 control-label">Rank</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="rank" name="rank" value="<?=$output->oMember->rank?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                   <label for="is_denied" class="col-sm-2 control-label">Status</label>
+
+                    <div class="col-sm-10">
+                        <select name="is_denied" class="form-control">
+                            <?php if($output->oMember->is_denied == 'N') $selected = 'selected';?>
+                            <option value="N" <?=$selected?>>Allow</option>
+                            <?php if($output->oMember->is_denied != 'N') $selected = 'selected'; else $selected = false; ?>
+                            <option value="Y" <?=$selected?>>Denied</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" <?php if($output->oMember->is_admin == "Y") echo 'checked="checked"';?> name="is_admin" value="Y"> Super Admin
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <h5>Permission Settings</h5>
 
                     <?php
-                    foreach($output->data as $member_info){
-                        echo "<tr>";
-                        echo "<td><a href='#' onclick='return false'>{$member_info->emp_no}</a></td>";
-                        echo "<td>{$member_info->user_id}</td>";
-                        echo "<td>{$member_info->user_name}</td>";
-                        echo "<td>{$member_info->dept}</td>";
-                        echo "<td>{$member_info->rank}</td>";
-                        echo "<td>{$member_info->type_srl}</td>";
-                        echo "<td>";
-                        echo ($member_info->is_denied == "Y") ? "<span class=\"label label-warning\">대기</span>" : "<span class=\"label label-success\">승인</span>";
-                        echo "</td>";
-                        echo "<td>" . zdate($member_info->regdate,'m월 d일') . "</td>";
-                        echo "<td>";
-                        echo "<a href=\"{$domain}settings/dispMemberCreate/{$member_info->member_srl}\" class=\"btn btn-sm toggle_modify btn-info btn-flat pull-left\">Modify</a>";
-                        echo "<a href=\"{$domain}settings/procMemberDelete/{$member_info->member_srl}\" class=\"btn btn-sm toggle_delete btn-danger btn-flat pull-left\" style='display:none;'>Delete</a>";
-                        echo "</td>";
-                        echo "</tr>";
+                        foreach($output->dept_list as $dept){
+                            echo "<div class=\"col-sm-4 col-md-3 col-xs-6\">";
+                                echo "<div class='box'>";
+                                echo "<div class=\"box-header with-border\"><b>{$dept->dept_title}</b></div>";
+                                if(count($dept->product_list)) {
+                                    foreach ($dept->product_list as $product) {
+                                        echo "<div class=\"box-body\">";
+                                        echo "<h5>{$product->product_title}</h5>";
+                                        echo "<select class='form-control' name='permissions[{$product->product_srl}]'>";
+                                        foreach ($product->permissions as $permission) {
+                                            if($output->oMember->permissions[$product->product_srl] == $permission->type_srl){
+                                                $selected = "selected='selected'";
+                                            }else{
+                                                $selected = false;
+                                            }
+                                            echo "<option $selected value='{$permission->type_srl}'>{$permission->type_title}</option>";
+                                        }
+                                        echo "</select>";
+                                        echo "</div>";
+                                    }
+                                }
+                                echo "</div>";
+                            echo "</div>";
+                        }
+                    ?>
+                <div style="clear:both;"></div>
+                <hr />
+
+                <h5>Allow Circurator for Create PRM</h5>
+                <select class="form-control" id="circu_list" onchange="addCircu(this)">
+                    <option value="">ADD Circurator</option>
+                    <?php
+                    $saved_subs = 0;
+                    foreach($output->circu_list as $circu){
+                        if($saved_subs != $circu->subs_srl){
+                            echo "<option value='{$circu->subs_srl}'>-----------{$circu->subs_title} ALL---------</option>";
+                            $saved_subs = $circu->subs_srl;
+                        }
+                        echo "<option value=\"{$circu->circu_srl}@{$circu->subs_srl}\">({$circu->subs_title}) {$circu->circu_title}</option>";
                     }
                     ?>
-                    </tbody>
-                </table>
+                </select>
+                <span class="glyphicon glyphicon-plus form-control-feedback"></span>
+                <div id="add_circu_list" class="row" style="padding:10px 15px;">
+                    <?php
+                    foreach($output->oMember->circu_srls as $circusubs){
+                        echo "<div class=\"pull-left\" style=\"margin-right:15px;\">
+                                <button class=\"btn btn-xs btn-warning\" onclick=\"$(this).parent().remove();\"><i class=\"fa fa-close\"></i>
+                                <input type=\"hidden\" name=\"circu_srls[]\" value=\"{$circusubs}\" />
+                                ({$output->circu_list[$circusubs]->subs_title}) {$output->circu_list[$circusubs]->circu_title}
+                                </button>
+                            </div>";
+                    }
+                    ?>
+                </div>
+
+
+
             </div>
-            <!-- /.table-responsive -->
-        </div>
-        <!-- /.box-body -->
-        <div class="box-footer clearfix">
-            <a href="<?=$domain?>settings/dispMemberCreate" class="btn btn-sm btn-info btn-flat pull-left"><i class="fa fa-plus"></i> Add New Member</a>
-            <a href="<?=$domain?>settings/dispMemberPermission" class="btn btn-sm btn-default btn-flat pull-right"><i class="fa fa-cog"></i> Member Type Setting</a>
-        </div>
-        <!-- /.box-footer -->
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <a class="btn btn-default" href="<?=$module_url?>dispMemberList">Cancel</a>
+                <button type="submit" class="btn btn-info pull-right"><?=$output->button_message?></button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
     </div>
-    <!-- /.box -->
-    </div>
-    <!-- /.col -->
 </section>
 <script type="text/javascript">
-    function toggleModify(type){
-        if(type == 'modify'){
-            $(".toggle_modify").show();
-            $(".toggle_delete").hide();
+    function addCircu(obj){
+        if($(obj).val().indexOf('@') !== -1){
+            var html = "";
+            html += '<div class="pull-left" style="margin-right:15px;">';
+            html += '<button class="btn btn-xs btn-warning" onclick="$(this).parent().remove();"><i class="fa fa-close"></i> ' +
+                $(obj).find("option:selected").html() +
+                '</button>';
+            html += '<input type="hidden" name="circu_srls[]" value="' + $(obj).val() + '" />';
+            html += '</div>';
+            $("#add_circu_list").append(html);
         }else{
-            $(".toggle_modify").hide();
-            $(".toggle_delete").show();
+            //loop
+            $("#circu_list").find('option[value$="@' + $(obj).val() + '"]').each(function(){
+                var html = "";
+                html += '<div class="pull-left" style="margin-right:15px;">';
+                html += '<button class="btn btn-xs btn-warning" onclick="$(this).parent().remove();"><i class="fa fa-close"></i> ' +
+                    $(this).html() +
+                    '</button>';
+                html += '<input type="hidden" name="circu_srls[]" value="' + $(this).val() + '" />';
+                html += '</div>';
+                $("#add_circu_list").append(html);
+            });
         }
     }
 </script>

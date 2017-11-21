@@ -1,0 +1,49 @@
+*변경사항
+
+- 등록된 스탭업로직이 없으면 해당 제품유형의 PRM을 생성할때 단계를 거치지 않도록 수정.
+(디자인그룹이 등록되어있지 않으면 해당 스탭을 패스하는거랑 같은 맥락)
+
+
+* 권한 관리를위한 아래 테이블 생성
+
+CREATE TABLE IF NOT EXISTS `member_type` (
+  `type_srl` bigint(11) NOT NULL,
+  `product_srl` bigint(11) NOT NULL,
+  `type_title` varchar(100) DEFAULT NULL,
+  `permission` text,
+  PRIMARY KEY (`type_srl`),
+  KEY `product_srl` (`product_srl`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+* 제품유형별 권한과 회원을 매칭해주는 테이블 생성
+CREATE TABLE IF NOT EXISTS `member_permission` (
+  `member_srl` bigint(20) NOT NULL,
+  `product_srl` bigint(20) NOT NULL,
+  `type_srl` bigint(20) NOT NULL,
+  PRIMARY KEY (`member_srl`,`product_srl`),
+  KEY `type_srl` (`type_srl`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+* 불필요한 칼럼 제거
+ALTER TABLE `member`
+  DROP `type_srl`,
+  DROP `is_outside`,
+  DROP `is_sso`,
+  DROP `permission`;
+
+
+* 그룹테이블명 변경
+RENAME TABLE  `lgeprm`.`member_group` TO  `lgeprm`.`member_circu` ;
+
+* 그룹테이블 불필요한 칼럼 제거
+ALTER TABLE  `member_circu` DROP  `subs_srl` ;
+
+///////////////// 11월 21일 구조변경
+
+* 회원필드 추가
+ALTER TABLE `member`  ADD `permissions` LONGTEXT NOT NULL,  ADD `circu_srls` LONGTEXT NOT NULL;
+
+* 불필요 테이블 제거
+DROP TABLE member_circu
+DROP TABLE member_permission
