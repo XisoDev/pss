@@ -88,6 +88,7 @@ class settingsView {
         if(!$output->oMember->member_srl){
             $output->title_message = "Create New Member";
             $output->button_message = "Sign Up";
+            $output->oMember->circu_srls = array();
         }
         //circu list
         $query = "select * from `circu` left join `subs` on `subs`.`subs_srl` = `circu`.`subs_srl` order by `circu`.`subs_srl` ASC";

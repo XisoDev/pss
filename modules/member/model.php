@@ -52,6 +52,17 @@ class memberModel{
         return $output;
     }
 
+    function getMemberInfoByUserId($user_id){
+        $user_id = addslashes($user_id);
+        $row = sql_fetch("select `member_srl` from `member` where `user_id` = '{$user_id}'");
+        if($row){
+            $member_srl = $row['member_srl'];
+        }else{
+            $member_srl = 0;
+        }
+        return $this->getMemberInfoByMemberSrl($member_srl);
+    }
+
 }
 
 ?>

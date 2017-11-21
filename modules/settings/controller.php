@@ -7,7 +7,6 @@ class settingsController{
     function procMemberInsert($args){
         //check fields
         if(!$args->user_id) return setReturn(-1, "유저 아이디가 누락되었습니다.");
-        if(!$args->password && !$args->member_srl) return setReturn(-1, "패스워드는 반드시 입력해야합니다.");
 
         //member first
         $obj = new stdClass();
@@ -35,6 +34,12 @@ class settingsController{
                 return setReturn(0, "수정성공");
             }
         }else{
+            if(!$args->password) return setReturn(-1, "패스워드는 반드시 입력해야합니다.");
+            //중복체크
+            $oMemberModel = getModel('member');
+            $member_info = $oMemberModel->getMemberInfoByUserId($args->user_id)->data;
+            if($member_info->member_srl) return setReturn(-1, "이미 존재하는 아이디입니다.");
+
             $obj->password = sha1($args->password);
             $obj->regdate = date("YmdHis");
             $obj->member_srl = getNextSequence();
@@ -45,6 +50,25 @@ class settingsController{
                 return setReturn(-1, "등록 실패");
             }
         }
+    }
+
+    function procMemberDelete(){
+        global $module_info;
+        if(!$module_info->seq) return setReturn(-1,"잘못된 접근입니다");
+
+        $oMemberModel = getModel('member');
+        $member_info = $oMemberModel->getMemberInfoByMemberSrl($module_info->seq)->data;
+        if($member_info->is_admin == "Y"){
+            return setReturn(-1,"최고관리자는 삭제할 수 없습니다.");
+        }
+
+        $result = sql_query("delete from `member` where `member_srl` = {$module_info->seq}");
+        if(!$result){
+            return setReturn(-1,"삭제에 실패하였습니다.");
+        }else {
+            return setReturn(0, "삭제되었습니다.");
+        }
+
     }
 
     function procInsertPermission($args){
@@ -932,7 +956,7 @@ class settingsController{
                 $table_sql .= " KEY `model` (`model`,`prod_subs`,`design_group`,`use_prm`)";
                 $table_sql .= " ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
 
-                $output = sql_query($table_sql);
+                $output = sql_query($table_sql, $link);
                 if(!$output){
                     writeLog($table_sql,"create_table");
                     sql_rollback($link);
