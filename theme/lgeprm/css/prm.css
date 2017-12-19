@@ -203,6 +203,7 @@
 .model_item .thumbnail{
     background-size:contain;
     background-position:center;
+    background-repeat:no-repeat;
     float: left;
     width: 150px;
     height: 80px;

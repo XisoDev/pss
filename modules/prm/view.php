@@ -37,7 +37,7 @@ class prmView{
         $query = "select `prm`.*, `product`.`dept_srl` from `prm` left join `product` on `prm`.`product_srl` = `product`.`product_srl` where ";
 
         $where = array();
-
+        $where[] = "`prm`.`member_srl` = " . $logged_info->member_srl;
         if($_GET['search_dept']){
             $val = addslashes($_GET['search_dept']);
             $where[] = "`product`.`dept_srl` = " . $val;

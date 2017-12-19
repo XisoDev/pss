@@ -418,6 +418,7 @@ class settingsController{
                     $_file_name = $code;
 
                     $filename = $_file_name. '.' .$_file_ext;
+                    $filename = strtolower($filename);
                 }
                 else
                 {
