@@ -232,7 +232,7 @@
         $(".model_item").each(function () {
             var no = $(this).attr('data-model-no');
             var rrp = $("#rrp_" + no).val();
-            if (rrp < 1) {
+            if (!rrp) {
                 $("#rrp_" + no).css('border', '1px solid #ad1947');
                 return true;
             } else {
@@ -240,7 +240,7 @@
             }
 
             var qty = $("#qty_" + no).val();
-            if (qty < 1) {
+            if (!qty) {
                 $("#qty_" + no).css('border', '1px solid #ad1947');
                 return true;
             } else {
@@ -248,7 +248,7 @@
             }
 
             var vat = $("#vat_" + no).val();
-            if (vat < 1) {
+            if (!vat) {
                 $("#vat_" + no).css('border', '1px solid #ad1947');
                 return true;
             } else {
@@ -256,7 +256,7 @@
             }
 
             var dealer_margin = $("#dealer_margin_" + no).val();
-            if (dealer_margin < 1) {
+            if (!dealer_margin) {
                 $("#dealer_margin_" + no).css('border', '1px solid #ad1947');
                 return true;
             } else {
@@ -264,7 +264,7 @@
             }
 
             var sales_deduction = $("#sales_deduction_" + no).val();
-            if (sales_deduction < 1) {
+            if (!sales_deduction) {
                 $("#sales_deduction_" + no).css('border', '1px solid #ad1947');
                 return true;
             } else {
