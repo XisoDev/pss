@@ -279,18 +279,32 @@ class prmModel{
                         //유통들의 정보를 함께출력
                         $circu_info->total = $row->profit->total;
 
+//                        법인의 MIX개념 합산을 위해 모델마다 계산하도록 수정.
                         //유통들의 정보를 법인단위로 누적시킴
-                        foreach($row->profit->total as $key => $val){
-                            $result_datas->{$key} = $result_datas->{$key} + $val;
-                        }
+//                        foreach($row->profit->total as $key => $val){
+//                            $result_datas->{$key} = $result_datas->{$key} + $val;
+//                        }
 
                         $circus[$row->circu_srl] = $circu_info;
                     }
+
+//                    모델마다 법인에 합산값을 누적하도록 수정.
+//                    $result_datas->{$key} = $result_datas->{$key} + $val;
+                    $result_datas->qty = $result_datas->qty + $model['qty'];
+                    $result_datas->smt = $result_datas->smt + $model['smt'];
+                    //smtusd
+                    $result_datas->netsales = $result_datas->netsales + $model['netsales'];
+                    $result_datas->coi_amt = $result_datas->coi_amt + $model['coi_amt'];
+                    $result_datas->mp_amt = $result_datas->mp_amt + $model['mp_amt'];
                 }
 
                 krsort($result_fields);
                 krsort($circu_models);
             }
+
+            //coi , mp 계산 (법인단위)
+            $result_datas->coi = number_format(round($result_datas->coi_amt / $result_datas->netsales * 100,1),1);
+            $result_datas->mp = number_format(round($result_datas->mp_amt / $result_datas->netsales * 100,1),1);
 //
 //            if($oResult->market_size){
 //                $market_size = array();
@@ -316,6 +330,7 @@ class prmModel{
             $oResult->result_fields = $result_fields;
             $oResult->circu_models = $circu_models;
             $oResult->circus = $circus;
+
             return $oResult;
         }else{
             return new Object(-1,"query_error");
