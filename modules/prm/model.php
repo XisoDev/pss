@@ -186,7 +186,7 @@ class prmModel{
         //뒤에는 현재의 PRM을 똑같이 취급하기위해
         $query = "SELECT * 
               FROM (
-                SELECT  `table_id`, `circu_srl` ,  `design_id` ,  `profit` ,  `models` 
+                SELECT  `prm_srl`, `table_id`, `circu_srl` ,  `design_id` ,  `profit` ,  `models` 
                 FROM  `prm` 
                 WHERE  `product_srl` = %d
                     AND (
@@ -204,7 +204,12 @@ class prmModel{
               ORDER BY  `circu_title` ASC";
         $query_string = sprintf($query, $oPRM->product_srl, $oPRM->subs_srl, $oPRM->circu_srl, $oPRM->prm_srl);
         $result = sql_query($query_string);
-
+//    echo query string
+//
+//        SELECT * FROM ( SELECT `prm_srl`, `table_id`, `circu_srl` , `design_id` , `profit` , `models` FROM `prm`
+//          WHERE `product_srl` = 576 AND ( ( `is_public` = "Y" AND `subs_srl` = 95 AND `circu_srl` <> 422 ) OR `prm_srl` = 595 ) GROUP BY `circu_srl` ORDER BY `pubdate` DESC )
+//          AS `circus` LEFT JOIN `circu` ON ( `circu`.`circu_srl` = `circus`.`circu_srl` ) ORDER BY `circu_title` ASC
+//
         if($result){
             //변수선언
             $oResult = new Object();
@@ -264,7 +269,8 @@ class prmModel{
                     $circu_models[$row->circu_srl][$model['rrp']][$model['no']] = $model;
 
                     //유통정보 저장 (모델마다 저장하면 너무많아지므로 따로들고있음.)
-                    if(!$oResult->circus[$row->circu_srl]){
+//                    조건오류로, 모델마다 증가하는 버그 수정.
+                    if(!$circus[$row->circu_srl]){
                         $circu_info = (object) sql_fetch("select * from `circu` left join `subs` on `subs`.`subs_srl` = `circu`.`subs_srl` left join `currency` on `currency`.`code` = `subs`.`currency`  where `circu_srl` = " . $row->circu_srl);
 //                        $circu_info->to_usd = $circu_;
                         $circu_info->design_id = $row->design_id;
