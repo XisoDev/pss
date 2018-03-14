@@ -845,6 +845,60 @@ class settingsController{
             return setReturn(-1, "업로드할 파일이 선택되지 않았습니다.");
         }
     }
+    function procDataInsertCircurator($args){
+        global $module_info;
+        global $domain;
+        //check CSV
+        $output = $this->__commonCSVCheck($args);
+        if($output->error) return $output;
+//        [0] => stdClass Object
+//            (
+//            [subs_title] => LGEKR
+//            [circu_title] => Asia
+//            [circu_abb] => KRW
+//            )
+        $exists = array();
+        $no_subs = array();
+        foreach($output->data as $circu){
+            //법인정보를 먼저 구함
+            $subs = sql_fetch('select * from `subs` where `subs_title` = "' . $circu->subs_title .'"');
+            if($subs['subs_srl'] > 0){
+                $data_exists = sql_query('select * from `circu` where `subs_title` = "' . $circu->circu_title .'" AND `subs_srl` = "'.$subs['subs_srl'].'"');
+                $row = mysqli_num_rows($data_exists);
+                if($row > 0){
+                    $exists[] = $circu->circu_title;
+                }else{
+                    $insertObj = new stdClass();
+                    $insertObj->circu_srl = getNextSequence();
+                    $insertObj->subs_srl = $subs['subs_srl'];
+                    $insertObj->circu_title = $circu->circu_title;
+                    $insertObj->circu_title_abb = $circu->circu_title_abb ? $circu->circu_title_abb : $circu->circu_title;
+                    $insertObj->regdate = date("YmdHis");
+                    $insertObj->list_order = $insertObj->circu_srl * -1;
+
+                    $insert_result = insertQuery("circu",$subs);
+                    if(!$insert_result->result){
+                        return setReturn(-1,"유통 생성에 실패했습니다.<br />" . $insert_result->message);
+                    }
+                }
+            }else{
+                $no_subs[] =  $circu->subs_title
+            }
+        }
+        $message = "유통 추가가 완료되었습니다.";
+        if(count($no_subs) > 0){
+            $message .= "<br />" . count($no_subs) . "개의 생성되지 않은 법인은 건너뛰었습니다.";
+            $message .= "<br />" . join(",",$no_subs);
+        }
+        if(count($exists) > 0){
+            $message .= "<br />" . count($exists) . "개의 중복데이터는 건너뛰었습니다.";
+            $message .= "<br />" . join(",",$exists);
+        }
+        return setReturn(0, $message, sprintf("%ssettings/dispDatacenter" ,$domain));
+
+        exit();
+    }
+
     function procDataInsertSubsidiary($args){
         global $module_info;
         global $domain;
@@ -870,14 +924,14 @@ class settingsController{
                 if(!$subs->currency) $subs->currency = "USD";
                 $insert_result = insertQuery("subs",$subs);
                 if(!$insert_result->result){
-                    return setReturn(-1,"필드리스트 생성에 실패했습니다.<br />" . $insert_result->message);
+                    return setReturn(-1,"법인 생성에 실패했습니다.<br />" . $insert_result->message);
                 }
             }
         }
         $message = "판매법인 추가가 완료되었습니다.";
         if(count($exists) > 0){
             $message .= "<br />" . count($exists) . "개의 중복데이터는 건너뛰었습니다.";
-            $message .= join(",",$exists);
+            $message .= "<br />" . join(",",$exists);
         }
         return setReturn(0, $message, sprintf("%ssettings/dispDatacenter" ,$domain));
 
