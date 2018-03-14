@@ -31,6 +31,13 @@ class settingsView {
         $module_info->template_file = "index";
     }
 
+//데이터 격납센터
+    function dispDatacenter(){
+
+        global $module_info;
+        $module_info->template_file = "datacenter/index";
+    }
+
     function dispSubsCurrency(){
         global $module_info;
 

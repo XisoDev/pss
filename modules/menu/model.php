@@ -188,6 +188,16 @@ class menuModel{
                 $subitem->new_window = "N";
                 $item->children[] = $subitem;
             $menus[] = $item;
+
+            //Subsdiary setting
+            $item = new stdClass();
+            $item->title = "데이터센터";
+            $item->link = $domain . "settings/dispDatacenter";
+            $item->active = ($module_info->module == "settings" && $module_info->act == "dispDatacenter") ? true : false;
+            $item->icon = "fa-database";
+            $item->new_window = "N";
+            $item->children = array();
+            $menus[] = $item;
         }
 
         return $menus;

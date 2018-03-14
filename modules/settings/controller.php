@@ -807,6 +807,81 @@ class settingsController{
         return strtolower($pure_field);
     }
 
+    /*
+     * 데이터센터
+     * 2018.03.14
+    */
+    function __commonCSVCheck($args){
+        if ( isset($_FILES["csv_file"])) {
+
+            //if there was an error uploading the file
+            if ($_FILES["csv_file"]["error"] > 0) {
+                return setReturn(-1, "CSV업로드 에러 : error " . $_FILES["csv_file"]["error"]);
+            }else{
+                //CSV to Array by xiso
+                $tmpName = $_FILES['csv_file']['tmp_name'];
+                $csvString = file($tmpName);
+
+                $csvArray = array();
+                foreach($csvString as $row) $csvArray[] = str_getcsv($row, ","); //parse the items in rows
+
+                $output = new Object();
+                $output->fields = $csvArray[0];
+
+                //field replace
+                foreach($output->fields as $key => $field) $output->fields[$key] = $this->replaceField($field);
+
+                unset($csvArray[0]);
+                foreach($csvArray as $data){
+                    $data_obj = new stdClass();
+                    foreach($data as $key => $val){
+                        $data_obj->{$output->fields[$key]} = $val;
+                    }
+                    $output->data[] = $data_obj;
+                }
+                return $output;
+            }
+        }else{
+            return setReturn(-1, "업로드할 파일이 선택되지 않았습니다.");
+        }
+    }
+    function procDataInsertSubsidiary($args){
+
+        global $module_info;
+        global $domain;
+        global $g5;
+        $link = $g5['connect_db'];
+        //check CSV
+        $output = $this->__commonCSVCheck($args);
+        if($output->error) return $output;
+
+//        [0] => stdClass Object
+//            (
+//            [region] => LGEKR
+//            [subs_title] => Asia
+//            [currency] => KRW
+//            )
+        $exists = array();
+        foreach($output->data as $subs){
+            $data_exists = sql_query('select * from `subs` where `subs_title` = ' . $subs->subs_title);
+            $row = mysqli_num_rows($data_exists);
+            if($row > 0){
+                $exists[] = $subs->subs_title;
+            }else{
+                if(!$subs->currency) $subs->currency = "USD";
+                insertQuery("subs",$subs);
+            }
+        }
+        $message = "판매법인 추가가 완료되었습니다.";
+        if(count($exists) > 0){
+            $message .= "<br />" . count($exists) . "개의 중복데이터는 건너뛰었습니다.";
+            $message .= join(",",$exists);
+        }
+        return setReturn(0, $message, sprintf("%ssettings/dispDatacenter" ,$domain));
+
+        exit();
+    }
+
 //    제품유형 생성
     function procProductTypeInsert($args){
         global $module_info;
