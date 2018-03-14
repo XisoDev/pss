@@ -41,7 +41,8 @@ class settingsView {
         $module_info->template_file = "datacenter/index";
 
         $output = new stdClass();
-        $output->product_list = $product_list;
+        $output->product_list = $product_list->data;
+        return $output;
     }
 
     function dispSubsCurrency(){

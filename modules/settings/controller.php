@@ -845,6 +845,52 @@ class settingsController{
             return setReturn(-1, "업로드할 파일이 선택되지 않았습니다.");
         }
     }
+    function procDataInsertSalefees($args){
+        global $module_info;
+        global $domain;
+        //check CSV
+        $output = $this->__commonCSVCheck($args);
+        if($output->error) return $output;
+
+        $no_subs = array();
+        foreach($output->data as $fees){
+            //법인정보를 먼저 구함
+            $subs = sql_fetch('select * from `subs` where `subs_title` = "' . $fees->subs_title .'"');
+            if($subs['subs_srl'] > 0){
+                //같은 값 삭제
+                sql_query("delete from `sale_fees` where `subs_srl` = " . $subs['subs_srl'] . " and `product_srl` = " . $args->product_srl . " and `category` = '" . $fees->category . "'");
+                //추가
+                $insertObj = new stdClass();
+                $insertObj->subs_srl = $subs['subs_srl'];
+                $insertObj->product_srl = $args->product_srl;
+                $insertObj->category = $fees->category;
+                $insertObj->inland_cost  = $fees->inland_cost;
+                $insertObj->amount_var = $fees->amount_var;
+                $insertObj->amount_fix = $fees->amount_fix;
+                $insertObj->admin_expenses = $fees->admin_expenses;
+                $insertObj->rnd = $fees->rnd;
+                $insertObj->service_var = $fees->service_var;
+                $insertObj->service_fix = $fees->service_fix;
+                $insertObj->transportation = $fees->transportation;
+
+                $insert_result = insertQuery("sale_fees",$insertObj);
+                if(!$insert_result->result){
+                    return setReturn(-1,"판매관리비 생성에 실패함." . $insert_result->message);
+                }
+            }else{
+                $no_subs[] =  $fees->subs_title;
+            }
+        }
+        $message = "판매관리비 정보 추가 및 업데이트가 완료되었습니다.";
+        if(count($no_subs) > 0){
+            $message .= "<br />" . count($no_subs) . "개의 생성되지 않은 법인은 건너뛰었습니다.";
+            $message .= "<br />" . join(",",$no_subs);
+        }
+        return setReturn(0, $message, sprintf("%ssettings/dispDatacenter" ,$domain));
+
+        exit();
+    }
+
     function procDataInsertCircurator($args){
         global $module_info;
         global $domain;

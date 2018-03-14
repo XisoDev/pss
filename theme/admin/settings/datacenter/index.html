@@ -79,21 +79,25 @@ include $module_info->theme_path . "_head.php";
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form role="form" method="post" action="<?=$domain?>settings/procDataInsertCircurator" enctype="multipart/form-data">
+        <form role="form" method="post" action="<?=$domain?>settings/procDataInsertSalefees" enctype="multipart/form-data">
             <div class="box-body">
                 <div class="col-sm-3">
                     <div class="form-group">
                         <a href="<?=$domain?>/theme/admin/settings/datacenter/insert_sales_fees.csv" class="btn btn-block btn-info">양식 다운로드</a>
                     </div>
+                </div>
+                <div class="col-sm-6">
 
                     <div class="form-group">
                         <label for="csv_file">대상 제품군</label>
-                        <select name="target_product">
-
+                        <select name="product_srl">
+                            <?php
+                            foreach($output->product_list as $product){
+                                echo "<option value=\"{$product->product_srl}\">{$product->product_title}</option>";
+                            }
+                            ?>
                         </select>
                     </div>
-                </div>
-                <div class="col-sm-6">
                     <div class="form-group">
                         <label for="csv_file">Upload CSV</label>
                         <input type="file" id="csv_file" name="csv_file" />
