@@ -846,15 +846,11 @@ class settingsController{
         }
     }
     function procDataInsertSubsidiary($args){
-
         global $module_info;
         global $domain;
-        global $g5;
-        $link = $g5['connect_db'];
         //check CSV
         $output = $this->__commonCSVCheck($args);
         if($output->error) return $output;
-
 //        [0] => stdClass Object
 //            (
 //            [region] => LGEKR
@@ -863,13 +859,16 @@ class settingsController{
 //            )
         $exists = array();
         foreach($output->data as $subs){
-            $data_exists = sql_query('select * from `subs` where `subs_title` = ' . $subs->subs_title);
+            $data_exists = sql_query('select * from `subs` where `subs_title` = "' . $subs->subs_title .'"');
             $row = mysqli_num_rows($data_exists);
             if($row > 0){
                 $exists[] = $subs->subs_title;
             }else{
                 if(!$subs->currency) $subs->currency = "USD";
-                insertQuery("subs",$subs);
+                $insert_result = insertQuery("subs",$subs);
+                if(!$insert_result->result){
+                    return setReturn(-1,"필드리스트 생성에 실패했습니다.<br />" . $insert_result->message);
+                }
             }
         }
         $message = "판매법인 추가가 완료되었습니다.";
@@ -877,6 +876,7 @@ class settingsController{
             $message .= "<br />" . count($exists) . "개의 중복데이터는 건너뛰었습니다.";
             $message .= join(",",$exists);
         }
+        exit();
         return setReturn(0, $message, sprintf("%ssettings/dispDatacenter" ,$domain));
 
         exit();
