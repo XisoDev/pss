@@ -174,6 +174,8 @@ class prmModel{
         foreach($temp_subs->data as $key => $val){
             if(in_array($val->circu_srl."@".$val->subs_srl,$logged_info->circu_srls)){
                 $subs->data[] = $val;
+            }else if($logged_info->is_admin == "Y"){
+                $subs->data[] = $val;
             }
         }
         return $subs;
