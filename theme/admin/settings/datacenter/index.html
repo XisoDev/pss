@@ -72,6 +72,43 @@ include $module_info->theme_path . "_head.php";
             </div>
         </form>
     </div>
+
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">법인 판매관리비 업데이트</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form role="form" method="post" action="<?=$domain?>settings/procDataInsertCircurator" enctype="multipart/form-data">
+            <div class="box-body">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <a href="<?=$domain?>/theme/admin/settings/datacenter/insert_circu.csv" class="btn btn-block btn-info">양식 다운로드</a>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="csv_file">대상 제품</label>
+                        <input type="file" id="csv_file" name="csv_file" />
+
+                        <p class="help-block">반드시 UTF-8언어셋으로 저장되었는지 확인하십시요.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="csv_file">Upload CSV</label>
+                        <input type="file" id="csv_file" name="csv_file" />
+
+                        <p class="help-block">반드시 UTF-8언어셋으로 저장되었는지 확인하십시요.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+
+            <div class="box-footer">
+                <button type="submit" class="btn btn-danger pull-right">수차례 업로드 할 파일을 확인했습니다.</button>
+            </div>
+        </form>
+    </div>
 </section>
 
 <?php

@@ -35,7 +35,22 @@ class settingsView {
     function dispDatacenter(){
 
         global $module_info;
+
+        $product_list = sql_query_array("select * from `product`");
+        $settingsModel = &getModel('settings');
+        $product_names = array();
+        $fees_target_list = array();
+        foreach($product_list as $product){
+            //get category_list
+            $product_names = $product->product_title;
+            $fees_target_list[$product->table_id] = $settingsModel->getCategoryList($product->table_id);
+        }
+
         $module_info->template_file = "datacenter/index";
+
+        $output = new stdClass();
+        $output->product_names = $product_names;
+        $output->fees_target_list = $fees_target_list;
     }
 
     function dispSubsCurrency(){
