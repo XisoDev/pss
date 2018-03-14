@@ -310,6 +310,8 @@
             profit.models[no].mfg_var = parseFloat(proc_fees[prod_subs][type].mfg_var * st * qty);
 
             //inlandcost 는 판관비쪽 데이터
+            console.log(sale_fees[type]);
+
             profit.models[no].inland_cost = parseFloat(sale_fees[type].inland_cost * gross);
             var cogs_var = profit.models[no].mat_cost_acc
                 + profit.models[no].labor_var

@@ -380,9 +380,16 @@ class prmModel{
         //판매비는 법인이 어차피 PRM당 하나이므로 검색조건에 subs_srl을 같이넣어줌.
         $sale_fees = sql_query_array("select * from `sale_fees` where `product_srl` = '{$oPRM->product_srl}' and `subs_srl` = '{$oPRM->subs_srl}'");
         foreach($sale_fees->data as $subs){
-            $oPRM->sale_fees[$subs->category] = $subs;
-            if(!$oPRM->sale_fees[$subs->category]->inland_cost) $oPRM->sale_fees[$subs->category]->inland_cost = "0";
-
+            $sale_fee = new stdClass();
+            $sale_fee->inland_cost = $subs->inland_cost ? $subs->inland_cost : "0";
+            $sale_fee->amount_var = $subs->amount_var ? $subs->amount_var : "0";
+            $sale_fee->amount_fix = $subs->amount_fix ? $subs->amount_fix : "0";
+            $sale_fee->admin_expenses = $subs->admin_expenses ? $subs->admin_expenses : "0";
+            $sale_fee->rnd = $subs->rnd ? $subs->rnd : "0";
+            $sale_fee->service_var = $subs->service_var ? $subs->service_var : "0";
+            $sale_fee->service_fix = $subs->service_fix ? $subs->service_fix : "0";
+            $sale_fee->transportation = $subs->transportation ? $subs->transportation : "0";
+            $oPRM->sale_fees[$subs->category] = $sale_fee;
             unset($oPRM->sale_fees[$subs->category]->subs_srl);
             unset($oPRM->sale_fees[$subs->category]->category);
             unset($oPRM->sale_fees[$subs->category]->product_srl);
