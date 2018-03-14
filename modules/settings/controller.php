@@ -845,6 +845,41 @@ class settingsController{
             return setReturn(-1, "업로드할 파일이 선택되지 않았습니다.");
         }
     }
+
+    function procDataInsertProcfees($args){
+        global $module_info;
+        global $domain;
+        //check CSV
+        $output = $this->__commonCSVCheck($args);
+        if($output->error) return $output;
+
+        $no_subs = array();
+        foreach($output->data as $fees){
+            //같은 값 삭제
+            sql_query("delete from `proc_fees` where `prod_subs` = '" . $fees->prod_subs . "' and `product_srl` = " . $args->product_srl . " and `category` = '" . $fees->category . "'");
+            //추가
+            //prod_subs,category,labor_var,labor_fix,mfg_var,mfg_fix,prod_currency
+            $insertObj = new stdClass();
+            $insertObj->prod_subs = $fees->prod_subs;
+            $insertObj->product_srl = $args->product_srl;
+            $insertObj->category = $fees->category;
+            $insertObj->labor_var  = $fees->labor_var;
+            $insertObj->labor_fix = $fees->labor_fix;
+            $insertObj->mfg_var = $fees->mfg_var;
+            $insertObj->mfg_fix = $fees->mfg_fix;
+            $insertObj->prod_currency = $fees->prod_currency;
+
+            $insert_result = insertQuery("proc_fees",$insertObj);
+            if(!$insert_result->result){
+                return setReturn(-1,"생산관리비 생성에 실패함." . $insert_result->message);
+            }
+        }
+        $message = "생산관리비 정보 추가 및 업데이트가 완료되었습니다.";
+        return setReturn(0, $message, sprintf("%ssettings/dispDatacenter" ,$domain));
+
+        exit();
+    }
+
     function procDataInsertSalefees($args){
         global $module_info;
         global $domain;
