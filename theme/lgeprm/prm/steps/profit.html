@@ -300,15 +300,18 @@
             var mat_cost = $(this).attr('data-model-mat_cost') / parseFloat(proc_fees[prod_subs][type].to_usd);
             console.log(proc_fees);
             console.log(mat_cost);
-
+            console.log()
             //수량에따른 총 재료비 계산
             profit.models[no].mat_cost_acc = parseFloat(mat_cost * qty);
+
 //          변동성 COGS 계산
             //생산비 값을 QTY 적용해서 모델에다가 계산해넣음.
             profit.models[no].labor_var = parseFloat(proc_fees[prod_subs][type].labor_var * st * qty);
             profit.models[no].mfg_var = parseFloat(proc_fees[prod_subs][type].mfg_var * st * qty);
+
             //inlandcost 는 판관비쪽 데이터
-            if(typeof profit.models[no].inland_cost !== 'undefined') profit.models[no].inland_cost = 0;
+            if(typeof profit.models[no].inland_cost === 'undefined') profit.models[no].inland_cost = 0;
+
             profit.models[no].inland_cost = parseFloat(sale_fees[type].inland_cost * gross);
             var cogs_var = profit.models[no].mat_cost_acc
                 + profit.models[no].labor_var
