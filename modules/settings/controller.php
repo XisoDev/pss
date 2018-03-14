@@ -807,6 +807,30 @@ class settingsController{
         return strtolower($pure_field);
     }
 
+    //매트릭스 다운로드
+    function procSaveMatrix($args){
+        $query = "SELECT *  FROM `product` WHERE `product_srl` = " . $args->product_srl;
+        $product = sql_fetch($query);
+        $table_id = $product['table_id'];
+
+        $output = sql_query_array("SELECT * FROM  `product_{$table_id}`");
+        header("Content-type: text/csv");
+        header("Content-Disposition: attachment; filename=".date("YmdHis")."_matrix_".$table_id.".csv");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        $out = fopen("php://output", 'w');
+        foreach ($output->data as $key => $data)
+        {
+            if($key == 0){
+                fputcsv($out, array_keys((array)$data));
+            }
+            fputcsv($out, (array)$data);
+        }
+
+        fclose($out);
+        exit();
+    }
+
     /*
      * 데이터센터
      * 2018.03.14
