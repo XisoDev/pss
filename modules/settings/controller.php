@@ -876,13 +876,13 @@ class settingsController{
                     $insertObj->regdate = date("YmdHis");
                     $insertObj->list_order = $insertObj->circu_srl * -1;
 
-                    $insert_result = insertQuery("circu",$subs);
+                    $insert_result = insertQuery("circu",$insertObj);
                     if(!$insert_result->result){
                         return setReturn(-1,"유통 생성에 실패했습니다.<br />" . $insert_result->message);
                     }
                 }
             }else{
-                $no_subs[] =  $circu->subs_title
+                $no_subs[] =  $circu->subs_title;
             }
         }
         $message = "유통 추가가 완료되었습니다.";
