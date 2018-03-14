@@ -155,6 +155,7 @@ class settingsView {
         $permissions->prm["profit"] = "수익성 분석";
         $permissions->prm["result"] = "동일법인 내 유통분석";
         $permissions->prm["spec"] = "스펙 및 마컴물 열람";
+        $permissions->prm["allcircu"] = "모든유통에 대해 생성가능";
 
         $permissions->function = array();
         $permissions->function["tocopy"] = "생성된 PRM 복사하여 공유";

@@ -176,6 +176,8 @@ class prmModel{
                 $subs->data[] = $val;
             }else if($logged_info->is_admin == "Y"){
                 $subs->data[] = $val;
+            }else if($logged_info->permissions[$args->product_srl]["allcircu"] == "Y"){
+                $subs->data[] = $val;
             }
         }
         return $subs;
