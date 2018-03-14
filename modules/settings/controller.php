@@ -863,7 +863,8 @@ class settingsController{
             //법인정보를 먼저 구함
             $subs = sql_fetch('select * from `subs` where `subs_title` = "' . $circu->subs_title .'"');
             if($subs['subs_srl'] > 0){
-                $data_exists = sql_query('select * from `circu` where `subs_title` = "' . $circu->circu_title .'" AND `subs_srl` = "'.$subs['subs_srl'].'"');
+                $sql = 'select * from `circu` where `circu_title` = "' . $circu->circu_title .'" AND `subs_srl` = '.$subs['subs_srl'];
+                $data_exists = sql_query($sql);
                 $row = mysqli_num_rows($data_exists);
                 if($row > 0){
                     $exists[] = $circu->circu_title;
