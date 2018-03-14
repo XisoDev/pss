@@ -381,6 +381,8 @@ class prmModel{
         $sale_fees = sql_query_array("select * from `sale_fees` where `product_srl` = '{$oPRM->product_srl}' and `subs_srl` = '{$oPRM->subs_srl}'");
         foreach($sale_fees->data as $subs){
             $oPRM->sale_fees[$subs->category] = $subs;
+            if(!$oPRM->sale_fees[$subs->category]->inland_cost) $oPRM->sale_fees[$subs->category]->inland_cost = "0";
+
             unset($oPRM->sale_fees[$subs->category]->subs_srl);
             unset($oPRM->sale_fees[$subs->category]->category);
             unset($oPRM->sale_fees[$subs->category]->product_srl);
