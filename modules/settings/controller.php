@@ -830,6 +830,27 @@ class settingsController{
         fclose($out);
         exit();
     }
+    function procUpdateMatrix($args){
+        $query = "SELECT *  FROM `product` WHERE `product_srl` = " . $args->product_srl;
+        $product = sql_fetch($query);
+        $table_id = $product['table_id'];
+
+        $output = $this->__commonCSVCheck($args);
+        if($output->error) return $output;
+
+        sql_query("TRUNCATE TABLE `product_{$table_id}");
+        $no_subs = array();
+        foreach($output->data as $matrix){
+            $insert_result = insertQuery("product_" . $table_id,$matrix);
+            if(!$insert_result->result){
+                return setReturn(-1,"매트릭스 갱신에 실패함." . $insert_result->message);
+            }
+        }
+        $message = "매트릭스가 갱신되었습니다.";
+        return setReturn(0, $message);
+
+        exit();
+    }
 
     /*
      * 데이터센터

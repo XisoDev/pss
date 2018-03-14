@@ -13,7 +13,7 @@ include $module_info->theme_path . "_head.php";
     </div>
 
 
-    <div class="box box-danger">
+    <div class="box box-warning">
         <div class="box-header with-border">
             <h3 class="box-title">판매법인 추가</h3>
         </div>
@@ -43,7 +43,7 @@ include $module_info->theme_path . "_head.php";
         </form>
     </div>
 
-    <div class="box box-danger">
+    <div class="box box-warning">
         <div class="box-header with-border">
             <h3 class="box-title">유통 추가</h3>
         </div>
@@ -153,6 +153,58 @@ include $module_info->theme_path . "_head.php";
                 <button type="submit" class="btn btn-danger pull-right">수차례 업로드 할 파일을 확인했습니다.</button>
             </div>
         </form>
+    </div>
+    <hr />
+    <h4>더 위험한 영역</h4>
+    <div class="box box-danger">
+        <div class="box-header with-border">
+            <h3 class="box-title">매트릭스 갱신</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+            <div class="box-body">
+                <div class="col-sm-3">
+                <form role="form" method="post" action="<?=$domain?>settings/procSaveMatrix" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="csv_file">대상 제품군</label>
+                        <select name="product_srl">
+                            <?php
+                            foreach($output->product_list as $product){
+                                echo "<option value=\"{$product->product_srl}\">{$product->product_title}</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-block btn-info">매트릭스 다운로드</button>
+                    </div>
+                </form>
+                </div>
+                <div class="col-sm-9">
+                    <form role="form" method="post" action="<?=$domain?>settings/procUpdateMatrix" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="csv_file">대상 제품군</label>
+                        <select name="product_srl">
+                            <?php
+                            foreach($output->product_list as $product){
+                                echo "<option value=\"{$product->product_srl}\">{$product->product_title}</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="csv_file">Upload CSV</label>
+                        <input type="file" id="csv_file" name="csv_file" />
+
+                        <p class="help-block">반드시 UTF-8언어셋으로 저장되었는지 확인하십시요.</p>
+                    </div>
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-danger pull-right">수차례 업로드 할 파일을 확인했습니다.</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /.box-body -->
     </div>
 </section>
 
