@@ -864,6 +864,9 @@ class settingsController{
             if($row > 0){
                 $exists[] = $subs->subs_title;
             }else{
+                $subs->subs_srl = getNextSequence();
+                $subs->regdate = date("YmdHis");
+                $subs->list_order = $subs->subs_srl * -1;
                 if(!$subs->currency) $subs->currency = "USD";
                 $insert_result = insertQuery("subs",$subs);
                 if(!$insert_result->result){
@@ -876,7 +879,6 @@ class settingsController{
             $message .= "<br />" . count($exists) . "개의 중복데이터는 건너뛰었습니다.";
             $message .= join(",",$exists);
         }
-        exit();
         return setReturn(0, $message, sprintf("%ssettings/dispDatacenter" ,$domain));
 
         exit();
