@@ -310,7 +310,8 @@
             profit.models[no].mfg_var = parseFloat(proc_fees[prod_subs][type].mfg_var * st * qty);
 
             //inlandcost 는 판관비쪽 데이터
-            console.log(sale_fees[type]);
+            if(typeof sale_fees[type] === "undefined")
+                return console.log( type + "유형 카테고리의 판매관리비 정보가 입력되지 않았습니다.");
 
             profit.models[no].inland_cost = parseFloat(sale_fees[type].inland_cost * gross);
             var cogs_var = profit.models[no].mat_cost_acc
